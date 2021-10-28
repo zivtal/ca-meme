@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body onload="init()">
+    <!-- Menu -->
+    <header class="header-container">
+        <div class="main-container main-content main-header">
+            <div class="logo">Meme</div>
+            <nav>
+                <input type="checkbox" /><span></span><span></span><span></span>
+                <ul>
+                    <li><a href="#" onclick="pageToggle('gallery')" data-trans="gallery">Gallery</a></li>
+                    <li><a href="#" onclick="pageToggle('editor')" data-trans="editor">Editor</a></li>
+                    <!-- <li><a href="#" onclick="pageToggle('storage')" data-trans="storage">Storage</a></li> -->
+                </ul>
+            </div>
+        </div>
+    </header>
+    <!-- Grid -->
+    <div class="grid-container main-content">
+        <div class="grid-control flex">
+            <div class="search">
+                <div>Search</div>
+                <input class="searchinput" type="text" oninput="onKeywordSearch(this)">
+                <button class="main-btn" onclick="onClickClear()">Clear</button>
+                </div>
+            <div class="keywords"></div>
+        </div>
+        <div class="grid-content"></div>
+    </div>
+    <!-- Canvas -->
+    <div class="meme-board main-content">
+        <div class="maintoolbar flex align-center">
+            <input type="file" id="upload-photo" class="main-btn" onchange="onUploadClick(event)">
+            <label class="main-btn flex align-center" for="upload-photo">Upload</label>
+            <a class="main-btn flex align-center" href="#" onclick="onDownloadClick(this)" download="myCanvas.jpg">Download</a>
+            <a class="main-btn flex align-center" href="#">Share</a>
+        </div>
+        <div class="canvas flex">
+            <div class="canvas-place"><canvas class="meme-canvas"></canvas></div>
+            <div class="control-panel flex">
+                    <input class="textinput" type="text" name="meme" oninput="onChangeText(this)" placeholder="Click button (+) to add new line" disabled>
+                    <div class="line">
+                        <img src="./img/icons/up-and-down-opposite-double-arrows-side-by-side.png" onclick="onSwitchClick()">
+                        <img src="./img/icons/add.png" onclick="onAddClick()">
+                        <img src="./img/icons/remove.png" onclick="onRemoveClick()">
+                        <img src="./img/icons/font-increase.png" onclick="onFontSizeClick(2)">
+                        <img src="./img/icons/font-decrease.png" onclick="onFontSizeClick(-2)">
+                        <img src="./img/icons/align-to-left.png" onclick="onAlignClick('left')">
+                        <img src="./img/icons/align-to-center.png" onclick="onAlignClick('center')">
+                        <img src="./img/icons/align-to-right.png" onclick="onAlignClick('right')">
+                        <span>
+                            <input name="fontcolor" class="colorpicker stroke" type="color" value="#000000" oninput="onChangeStroke(this)"></input>
+                            <img src="./img/icons/font-stroke.png">
+                        </span>
+                        <span>
+                            <input name="fontcolor" class="colorpicker font" type="color" value="#ffffff" oninput="onChangeColor(this)"></input>
+                            <img src="./img/icons/paint-board-and-brush.png">
+                        </span>
+                        <select class="fontfamily" onchange="onChangeFont(this)">
+                            <option>Impact</option>
+                            <option>Arial</option>
+                        </select> 
+                    </div>
+                    <div class="stickers"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Storage -->
+    <div class="storage main-content flex"></div>
+    <script src="js/service/storage-service.js"></script>
+    <script src="js/service/tracking-service.js"></script>
+    <script src="js/service/canvas-service.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/navbar-controller.js"></script>
+    <script src="js/grid-controller.js"></script>
+    <script src="js/canvas-controller.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

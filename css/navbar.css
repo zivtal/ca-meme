@@ -1,0 +1,205 @@
+.header-container {
+  position: relative;
+  user-select: none;
+  z-index: 2000;
+}
+
+/* set flex */
+.main-header,
+.main-header .logo,
+.main-header nav ul,
+.main-header nav a {
+  display: flex;
+}
+
+/* set flex align-center */
+.main-header,
+.main-header .logo,
+.main-header nav > ul li a {
+  align-items: center;
+  font-family: cursive;
+}
+
+/* set clean-list on all ul */
+.main-header nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.main-header nav > ul > li {
+  position: relative;
+}
+
+/* set interface */
+
+.main-header .logo {
+  color: blue;
+  font-size: 2.5rem;
+  flex-grow: 1;
+}
+
+.main-header nav a {
+  font-size: 1rem;
+  color: black;
+  text-decoration: none;
+  transition: 0.5s;
+}
+
+.header-container,
+.main-header nav ul {
+  background-color: lightskyblue;
+}
+
+.main-header nav a:hover {
+  color: blue;
+}
+
+/* break less then 760px */
+@media screen and (max-width: 760px) {
+  .main-header nav > input {
+    position: relative;
+    top: 10px;
+    cursor: pointer;
+    right: 0.2rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    opacity: 0;
+    z-index: 1;
+  }
+
+  .main-header nav > span {
+    position: relative;
+    display: block;
+    right: -0.05rem;
+    width: 2.5rem;
+    height: 0.3rem;
+    background-color: blue;
+    border-radius: 5px;
+    transition: 1s;
+  }
+
+  .main-header nav > span:nth-last-child(4) {
+    top: -1.8rem;
+  }
+
+  .main-header nav > span:nth-last-child(3) {
+    top: -1.3rem;
+  }
+
+  .main-header nav > span:nth-last-child(2) {
+    top: -0.9rem;
+  }
+
+  .main-header nav > input:checked ~ ul {
+    max-height: 100vh;
+  }
+
+  .main-header nav > input:checked ~ span:nth-last-child(4) {
+    transform: rotate(225deg) translate(-19%, -188%);
+  }
+
+  .main-header nav > input:checked ~ span:nth-last-child(3) {
+    transform: rotate3d(0, 1, 0, 90deg);
+    opacity: 0;
+  }
+
+  .main-header nav > input:checked ~ span:nth-last-child(2) {
+    transform: rotate(315deg) translate(19%, -233%);
+  }
+
+  .main-header .logo {
+    height: 3rem;
+  }
+
+  .main-header nav > ul {
+    flex-direction: column;
+    padding-inline-start: 15%;
+    position: absolute;
+    left: 0px;
+    max-height: 0;
+    transition: 1s;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .main-header nav ul li {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .main-header nav > ul > li:last-child {
+    padding-block-end: 1.5rem;
+  }
+
+  .main-header nav ul li a {
+    flex-grow: 1;
+  }
+
+  /* set fonts and color*/
+  .main-header nav > ul > li > a {
+    height: 4rem;
+  }
+}
+
+/* more then 760px break */
+@media screen and (min-width: 760px) {
+  .main-header input {
+    display: none;
+  }
+  .main-header .logo {
+    height: 5rem;
+  }
+
+  .main-header nav ul li a {
+    justify-content: center;
+    margin: 2rem 5px;
+    height: 2.5rem;
+    width: 10rem;
+    border-radius: 30px;
+    background-color: white;
+  }
+
+  .main-header nav span {
+    display: none;
+  }
+
+  .main-header nav .header-checkbox {
+    display: none;
+  }
+
+  .main-header nav > ul > li > ul {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    transition: 0.6s;
+    max-height: 0;
+    overflow: hidden;
+  }
+
+  .main-header nav > ul > li > ul > li:not(:last-child) {
+    border-bottom: 6px solid transparent;
+  }
+
+  .main-header nav ul > li:hover > ul {
+    max-height: 100vh;
+  }
+
+  /* set fonts and color */
+  .main-header nav > ul > li > ul > li > a {
+    font-family: "lato", Arial, Helvetica, sans-serif;
+    height: 2.5rem;
+  }
+
+  .main-header nav a:hover {
+    box-shadow: inset 0px -6px 0 gold;
+  }
+}
+
+/* break more then 1000px */
+@media screen and (max-width: 1000px) {
+  .main-header .logo {
+    padding-inline-start: 1rem;
+  }
+}
