@@ -150,6 +150,7 @@ function addCanvasImage(image, x, y, xSize, ySize) {
         },
         width: xSize,
         height: ySize,
+        degrees: 0,
         left: x,
         right: x + xSize,
         top: y,
@@ -214,9 +215,9 @@ function getActiveItem(x, y) {
 }
 
 function setCanvasLineSize(line, width) {
-    line.width = width + 10;
+    line.width = width + 20;
     line.height = line.font.size;
-    line.left = line.offset.x - line.width / 2 - 5;
+    line.left = line.offset.x - line.width / 2;
     line.right = line.offset.x + line.width;
     line.top = line.offset.y - line.height + 5;
     line.bottom = line.offset.y;
@@ -249,4 +250,8 @@ function resizeCanvasItem(item, x, y) {
     item.width = Math.max(item.width + (x + y) / 100, 25);
     item.height = item.width * ratio;
     setCanvasImage(item);
+}
+
+function rotateCanvasItem(item, x, y) {
+    item.degrees += x / 1000;
 }

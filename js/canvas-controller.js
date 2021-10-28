@@ -4,9 +4,11 @@ var gElCanvas;
 var gCtx;
 var gCanvasImg;
 var gActiveLayer;
-var gIsResizing;
+var gTrkMode;
+var gIcons;
 
 function initCanvas(img) {
+    createIcons();
     renderCanvasPanel();
     pageToggle('editor');
     gElCanvas = document.querySelector('canvas');
@@ -17,6 +19,13 @@ function initCanvas(img) {
     });
     setEvents(gElCanvas);
     loadImg(getImg(img), onLoadComplete);
+}
+
+function createIcons() {
+    gIcons = {};
+    const saveIcon = (img, title) => gIcons[title] = img;
+    loadImg('./img/icons/rotate.png', saveIcon, 'rotate');
+    loadImg('./img/icons/scale.png', saveIcon, 'scale');
 }
 
 function renderCanvasPanel() {
@@ -97,6 +106,7 @@ function onRemoveClick() {
             elInput.setAttribute('disabled', '');
         }
         removeCanvasItem(gActiveLayer);
+        gActiveLayer = null;
     }
     renderCanvas();
 }
@@ -166,9 +176,11 @@ function getActiveLayer() {
                     y: gActiveLayer.height / 2,
                 }
                 const isTouch = gTracking.isTouch();
-                const clickOffsetX = (isTouch) ? gActiveLayer.right * 0.8 : gActiveLayer.right * 0.9;
-                const clickOffsetY = (isTouch) ? gActiveLayer.bottom * 0.8 : gActiveLayer.bottom * 0.9;
-                gIsResizing = gTracking.offset.start.x > clickOffsetX && gTracking.offset.start.y > clickOffsetY;
+                let clickOffsetX = (isTouch) ? gActiveLayer.right * 0.8 : gActiveLayer.right * 0.9;
+                let clickOffsetY = (isTouch) ? gActiveLayer.bottom * 0.8 : gActiveLayer.bottom * 0.9;
+                if ((gTracking.offset.start.x > clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'scale';
+                clickOffsetX = (isTouch) ? gActiveLayer.left * 1.2 : gActiveLayer.left * 1.1;
+                if ((gTracking.offset.start.x < clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'rotate';
                 break;
         }
     }
@@ -177,7 +189,7 @@ function getActiveLayer() {
 function startTracking(ev) {
     gTracking.start(ev);
     document.body.style.cursor = 'grabbing';
-    gIsResizing = null;
+    gTrkMode = 'move';
     getActiveLayer();
 }
 
@@ -185,12 +197,19 @@ function moveTracking(ev) {
     gTracking.move(ev);
     if (gTracking.isActive && gActiveLayer) {
         // alert(JSON.stringify(gTracking.change()));
-        if (gIsResizing || gTracking.isPinch) {
-            const change = gTracking.change();
-            resizeCanvasItem(gActiveLayer, change.x, change.y);
-        } else {
-            document.body.style.cursor = 'grab';
-            gActiveLayer.offset = gTracking.offset.end;
+        const change = gTracking.change();
+        console.log(gTrkMode);
+        switch (gTrkMode) {
+            case 'scale':
+                resizeCanvasItem(gActiveLayer, change.x, change.y);
+                break;
+            case 'rotate':
+                rotateCanvasItem(gActiveLayer, change.x, change.y);
+                break;
+            default:
+                document.body.style.cursor = 'grab';
+                gActiveLayer.offset = gTracking.offset.end;
+                break;
         }
         renderCanvas();
     }
@@ -269,13 +288,29 @@ function drawText(item) {
 
 function markActiveLayer(item) {
     gCtx.beginPath();
-    gCtx.rect(item.left, item.top, item.width, item.height);
+    switch (item.type) {
+        case 'text':
+            gCtx.rect(item.left, item.top, item.width, item.height);
+            break;
+        case 'image':
+            gCtx.drawImage(gIcons.rotate, item.left, item.bottom - 15, 20, 20);
+            gCtx.drawImage(gIcons.scale, item.right - 15, item.bottom - 15, 20, 20);
+            break;
+    }
+    gCtx.lineWidth = 3;
     gCtx.strokeStyle = 'red';
     gCtx.stroke();
 }
 
 function drawImg(item) {
-    gCtx.beginPath();
-    gCtx.drawImage(item.image, item.offset.x, item.offset.y, item.width, item.height);
+    gCtx.save();
+    if (item.degrees) {
+        gCtx.translate(item.offset.x + item.width / 2, item.offset.y + item.height / 2);
+        gCtx.rotate(item.degrees);
+        gCtx.drawImage(item.image, -item.width / 2, -item.height / 2, item.width, item.height);
+    } else {
+        gCtx.drawImage(item.image, item.offset.x, item.offset.y, item.width, item.height);
+    }
+    gCtx.restore();
     setCanvasImage(item);
 }
