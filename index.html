@@ -16,6 +16,7 @@
                 <input type="checkbox" /><span></span><span></span><span></span>
                 <ul>
                     <li><a href="#" onclick="pageToggle('gallery')" data-trans="gallery">Gallery</a></li>
+                    <li><a class="hide storage-button" href="#" onclick="pageToggle('storage')" data-trans="storage">Storage</a></li>
                     <li><a href="#" onclick="pageToggle('editor')" data-trans="editor">Editor</a></li>
                     <!-- <li><a href="#" onclick="pageToggle('storage')" data-trans="storage">Storage</a></li> -->
                 </ul>
@@ -37,10 +38,12 @@
     <!-- Canvas -->
     <div class="meme-board main-content">
         <div class="maintoolbar flex align-center">
+            <a class="main-btn flex align-center" href="#" onclick="onClearCanvas()">Clear</a>
             <input type="file" id="upload-photo" class="main-btn" onchange="onUploadClick(event)">
             <label class="main-btn flex align-center" for="upload-photo">Upload</label>
             <a class="main-btn flex align-center" href="#" onclick="onDownloadClick(this)" download="myCanvas.jpg">Download</a>
-            <a class="main-btn flex align-center" href="#">Share</a>
+            <a class="main-btn flex align-center" href="#" onclick="onSaveCanvas()">Save</a>
+            <a class="main-btn flex align-center remove-button hide" href="#" onclick="onRemoveCanvas()">Remove</a>
         </div>
         <div class="canvas flex">
             <div class="canvas-place"><canvas class="meme-canvas"></canvas></div>

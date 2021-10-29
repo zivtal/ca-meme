@@ -7,18 +7,33 @@ var gActiveLayer;
 var gTrkMode;
 var gIcons;
 
-function initCanvas(img) {
+function initCanvas(img, isStorage = false) {
+    clearCanvas();
+    renderCanvas();
     createIcons();
     renderCanvasPanel();
     pageToggle('editor');
+    const elCanvasPlace = document.querySelector('.canvas-place');
     gElCanvas = document.querySelector('canvas');
+    gElCanvas.width = elCanvasPlace.offsetWidth
+    gElCanvas.height = elCanvasPlace.offsetHeight
     gCtx = gElCanvas.getContext("2d");
+    gCtx.clearRect(0, 0, gElCanvas.width, gElCanvas.height);
+    setEvents(gElCanvas);
     window.addEventListener('resize', () => {
         resizeCanvas();
         renderCanvas();
     });
-    setEvents(gElCanvas);
-    loadImg(getImg(img), onLoadComplete);
+    const elRemoveBtn = document.querySelector('.remove-button');
+    if (isStorage) {
+        loadCanvas(img);
+        resizeCanvas();
+        renderCanvas();
+        elRemoveBtn.classList.remove('hide');
+    } else {
+        loadImg(getImg(img), onLoadComplete);
+        elRemoveBtn.classList.add('hide');
+    }
 }
 
 function createIcons() {
@@ -125,7 +140,7 @@ function onClickSticker(el) {
     elInput.value = '';
     const idx = el.dataset['index'];
     const sticker = getSticker(idx);
-    const draw = function (img, arg) {
+    const draw = function (img, ...arg) {
         const size = arg.splice(0, 1)[0];
         const height = (img.height > img.width) ? size : size * (img.height / img.width);
         const width = (img.width > img.height) ? size : size * (img.width / img.height);
@@ -136,19 +151,56 @@ function onClickSticker(el) {
     loadImg(sticker, draw, 100);
 }
 
+function onClearCanvas() {
+    initCanvasModel();
+    gCtx.clearRect(0, 0, gElCanvas.width, gElCanvas.height);
+}
+
 function onUploadClick(ev) {
     loadImgFromFile(ev, onLoadComplete);
 }
 
 function onDownloadClick(el) {
-    const imgContent = gElCanvas.toDataURL('image/jpeg')
-    el.href = imgContent
+    const imgContent = gElCanvas.toDataURL('image/jpeg');
+    el.href = imgContent;
+}
+
+function onSaveCanvas() {
+    renderCanvas(true);
+    const imgContent = gElCanvas.toDataURL('image/jpeg');
+    saveCanvas(imgContent);
+    const elStorageBtn = document.querySelector('.storage-button');
+    elStorageBtn.classList.remove('hide');
+    const elRemoveBtn = document.querySelector('.remove-button');
+    elRemoveBtn.classList.remove('hide');
+}
+
+function onRemoveCanvas() {
+    removeCanvas();
+    onClearCanvas();
+    if (getStorageImgs().length === 0) {
+        const elStorageBtn = document.querySelector('.storage-button');
+        elStorageBtn.classList.add('hide');
+    }
+    const elRemoveBtn = document.querySelector('.remove-button');
+    elRemoveBtn.classList.add('hide');
 }
 
 function onLoadComplete(img) {
     setImg(img);
     resizeCanvas();
     renderCanvas();
+}
+
+function loadImgFromFile(ev, onImageReady) {
+    var reader = new FileReader()
+    reader.onload = function (event) {
+        var img = new Image()
+        img.onload = onImageReady.bind(null, img)
+        img.src = event.target.result
+        gImg = img
+    }
+    reader.readAsDataURL(ev.target.files[0])
 }
 
 function getActiveLayer() {
@@ -221,7 +273,30 @@ function endTracking() {
     renderCanvas();
 }
 
-function setEvents(el, isMouse = true, isTouch = true) {
+function keyDown(ev) {
+    if (gActiveLayer) {
+        switch (ev.key) {
+            case 'ArrowUp':
+                if (gActiveLayer.offset.y > -gActiveLayer.height * 0.8) gActiveLayer.offset.y--;
+                renderCanvas()
+                break;
+            case 'ArrowDown':
+                if (gActiveLayer.offset.y < gElCanvas.height - gActiveLayer.height * 0.2) gActiveLayer.offset.y++;
+                renderCanvas()
+                break;
+            case 'ArrowLeft':
+                if (gActiveLayer.offset.x > -gActiveLayer.width * 0.8) gActiveLayer.offset.x--;
+                renderCanvas()
+                break;
+            case 'ArrowRight':
+                if (gActiveLayer.offset.x < gElCanvas.width - gActiveLayer.width * 0.2) gActiveLayer.offset.x++;
+                renderCanvas()
+                break;
+        }
+    }
+}
+
+function setEvents(el, isMouse = true, isTouch = true, isKeyboard = true) {
     if (isMouse) {
         el.addEventListener('mousedown', startTracking);
         el.addEventListener('mousemove', moveTracking);
@@ -232,25 +307,35 @@ function setEvents(el, isMouse = true, isTouch = true) {
         el.addEventListener('touchmove', moveTracking);
         el.addEventListener('touchend', endTracking);
     }
+    if (isKeyboard) {
+        window.addEventListener('keydown', keyDown);
+    };
 }
 
 function resizeCanvas(img = getImg()) {
     const elCanvasPlace = document.querySelector('.canvas-place');
     const height = elCanvasPlace.offsetHeight;
     const width = elCanvasPlace.offsetWidth;
-    if (height < 0 || width < 0) return;
+    if ((!height) || (!width)) return;
     const ratio = img.width / img.height;
     const size = (height > width) ? width : height;
     gElCanvas.width = (height > width) ? size : size * ratio;
     gElCanvas.height = (height > width) ? size / ratio : size;
-    gElCanvas.style.left = (10 + (width - 20 - gElCanvas.width) / 2) + 'px';
+    gElCanvas.style.left = ((width - gElCanvas.width) / 2) + 'px';
     setCanvasSize(gElCanvas.width, gElCanvas.height);
 }
 
-function renderCanvas(canvas = getMeme(), isExport = false) {
+function renderCanvas(isExport = false) {
+    const canvas = getMeme();
     if (!canvas.img) return;
     if (isExport) gActiveLayer = null;
-    gCtx.drawImage(canvas.img, 0, 0, gElCanvas.width, gElCanvas.height);
+    gCtx.save();
+    if (/^data:image\/(png|jpg|jpeg);base64,/.test(canvas.img)) {
+        loadImg(canvas.img, img => gCtx.drawImage(img, 0, 0, gElCanvas.width, gElCanvas.height));
+    } else {
+        gCtx.drawImage(canvas.img, 0, 0, gElCanvas.width, gElCanvas.height);
+    }
+    gCtx.restore();
     canvas.items.forEach(item => {
         switch (item.type) {
             case 'text':
@@ -304,12 +389,22 @@ function markActiveLayer(item) {
 
 function drawImg(item) {
     gCtx.save();
-    if (item.degrees) {
+    const rotate = () => {
         gCtx.translate(item.offset.x + item.width / 2, item.offset.y + item.height / 2);
         gCtx.rotate(item.degrees);
-        gCtx.drawImage(item.image, -item.width / 2, -item.height / 2, item.width, item.height);
+    }
+    const draw = (img, item) => {
+        if (item.degrees) {
+            rotate();
+            gCtx.drawImage(img, -item.width / 2, -item.height / 2, item.width, item.height);
+        } else {
+            gCtx.drawImage(img, item.offset.x, item.offset.y, item.width, item.height);
+        }
+    }
+    if (/^data:image\/(png|jpg|jpeg);base64,/.test(item.img)) {
+        loadImg(item.image, draw);
     } else {
-        gCtx.drawImage(item.image, item.offset.x, item.offset.y, item.width, item.height);
+        draw(item.image, item);
     }
     gCtx.restore();
     setCanvasImage(item);

@@ -3,6 +3,7 @@
 var gImgNextId;
 var gImgs;
 var gMeme;
+var gMemeStorage;
 var gStickers;
 var gItemIdx;
 
@@ -11,8 +12,44 @@ function initCanvasModel() {
     gImgNextId = 0;
     gImgs = createImgs();
     gMeme = createMeme();
+    loadMemeFromStorage();
     gStickers = createStickers();
 }
+
+function loadMemeFromStorage() {
+    gMemeStorage = loadFromStorage('meme');
+    if (!gMemeStorage || gMemeStorage.length === 0) {
+        gMemeStorage = [];
+        return;
+    }
+    gMemeStorage.forEach(canvas => {
+        const img = new Image();
+        img.onload = function () {
+            canvas.img = img;
+        }
+        img.src = canvas.img;
+        const imgs = canvas.items.filter(item => item.type === 'image');
+        imgs.forEach(item => {
+            const img = new Image();
+            img.onload = function () {
+                item.image = img;
+            }
+            img.src = item.image;
+        });
+    });
+}
+
+function saveMemeToStorage() {
+    gMemeStorage.forEach(canvas => {
+        canvas.img = getBase64Image(canvas.img)
+        const imgs = canvas.items.filter(item => item.type === 'image');
+        imgs.forEach(item => item.image = getBase64Image(item.image));
+    });
+    saveToStorage('meme', gMemeStorage);
+    setTimeout(loadMemeFromStorage(), 1000);
+}
+
+
 
 function createStickers() {
     return [
@@ -41,6 +78,10 @@ function createMeme() {
         width: null,
         height: null,
     }
+}
+
+function clearCanvas() {
+    gMeme = createMeme();
 }
 
 function createImgs() {
@@ -156,6 +197,7 @@ function addCanvasImage(image, x, y, xSize, ySize) {
         top: y,
         bottom: y + ySize,
         image,
+        ratio: ySize / gMeme.height,
     });
     return gMeme.items[gMeme.items.length - 1];
 }
@@ -165,6 +207,7 @@ function setCanvasImage(item) {
     item.bottom = item.offset.y + item.height;
     item.left = item.offset.x;
     item.right = item.offset.x + item.width;
+    item.ratio = item.height / gMeme.height;
 }
 
 function setImg(img) {
@@ -190,6 +233,12 @@ function getImgs(...keywords) {
         });
     }
     return (keywords && keywords.length) ? imgs : gImgs;
+}
+
+function getStorageImgs() {
+    const imgs = [];
+    gMemeStorage.forEach(meme => imgs.push(meme.preview));
+    return imgs;
 }
 
 function getMeme() {
@@ -253,5 +302,29 @@ function resizeCanvasItem(item, x, y) {
 }
 
 function rotateCanvasItem(item, x, y) {
-    item.degrees += x / 1000;
+    item.degrees -= x / 1000;
+}
+
+function saveCanvas(dataurl) {
+    if (!gMeme) return;
+    gMeme.preview = dataurl;
+    if (!gMeme.storage) {
+        gMeme.storage = true;
+        gMeme.index = gMemeStorage.length;
+        gMemeStorage.push(gMeme);
+    }
+    saveMemeToStorage();
+    gMeme = gMemeStorage[gMeme.index];
+}
+
+function loadCanvas(idx) {
+    gMeme = gMemeStorage[idx];
+    return gMeme;
+}
+
+function removeCanvas() {
+    const idx = gMemeStorage.findIndex(item => item === gMeme);
+    console.log(idx);
+    gMemeStorage.splice(idx, 1);
+    saveMemeToStorage();
 }
