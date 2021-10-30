@@ -53,6 +53,17 @@ function saveMemeToStorage() {
 }
 
 
+function createMeme() {
+    return {
+        items: [],
+        image: {
+            data: null,
+            url: null,
+        },
+        width: null,
+        height: null,
+    }
+}
 
 function createStickers() {
     return [
@@ -74,81 +85,20 @@ function createStickers() {
     ];
 }
 
-function createMeme() {
-    return {
-        items: [],
-        image: {
-            data: null,
-            url: null,
-        },
-        width: null,
-        height: null,
-    }
-}
-
-function clearCanvas() {
-    gMeme = createMeme();
-}
-
-function createImgs() {
-    return [
-        addImg('2.jpg', 'dancing', 'women'),
-        addImg('003.jpg', 'tramp', 'funny', 'politician'),
-        addImg('004.jpg', 'dog', 'love', 'animals'),
-        addImg('005.jpg', 'baby', 'dog', 'animals', 'love'),
-        addImg('5.jpg', 'baby', 'funny', 'angry'),
-        addImg('006.jpg', 'cat', 'animals', 'sleep', 'tired'),
-        addImg('8.jpg', 'actor', 'celeb', 'famous'),
-        addImg('9.jpg', 'baby', 'funny', 'laugh'),
-        addImg('12.jpg', 'famous', 'television', 'israel'),
-        addImg('19.jpg', 'famous', 'comedian', 'funny', 'israel'),
-        addImg('Ancient-Aliens.jpg', 'famous', 'television'),
-        addImg('drevil.jpg', 'actor', 'movies'),
-        addImg('img2.jpg', 'baby', 'dancing', 'funny'),
-        addImg('img4.jpg', 'tramp', 'funny', 'politician'),
-        addImg('img5.jpg', 'baby', 'funny'),
-        addImg('img6.jpg', 'dog', 'funny'),
-        addImg('img11.jpg', 'barack obama', 'politician', 'laugh'),
-        addImg('img12.jpg', 'love'),
-        addImg('leo.jpg', 'leonardo dicaprio', 'actor', 'celeb', 'famous'),
-        addImg('meme1.jpg', 'actor', 'celeb', 'famous'),
-        addImg('One-Does-Not-Simply.jpg', 'actor', 'celeb', 'famous'),
-        addImg('Oprah-You-Get-A.jpg', 'television', 'celeb', 'famous'),
-        addImg('patrick.jpg', 'actor', 'celeb', 'famous'),
-        addImg('putin.jpg', 'putin', 'politician'),
-        addImg('X-Everywhere.jpg', 'movie', 'animation', 'kids'),
-    ];
-}
-
-function setCanvasSize(width, height) {
-    gMeme.width = width;
-    gMeme.height = height;
-}
-
-function addImg(filename, ...keywords) {
-    return {
-        id: gImgNextId++,
-        url: './img/meme/' + filename,
-        keywords,
-    };
-}
-
-function getNewLine(height = gMeme.height, text = 'new line') {
-    let y;
-    switch (gMeme.items.length) {
+function getTextPosition(type, size, height) {
+    switch (gMeme.items.filter(item => item.type === type).length) {
         case 0:
-            y = 48;
-            break;
+            return size;
         case 1:
-            y = height / 2 - 48 / 2;
-            break;
-        case 3:
-            y = height - 48;
-            break;
+            return height / 2 + (size / 2);
+        case 2:
+            return height - 10;
         default:
-            y = height / 2;
-            break;
+            return height / 2;
     }
+}
+
+function createNewLine(height = gMeme.height, text = 'new line') {
     const lastItem = gMeme.items[gMeme.items.length - 1];
     if ((!gMeme.items.length) || lastItem.type !== 'text' || lastItem.text) {
         gMeme.items.push({
@@ -156,7 +106,7 @@ function getNewLine(height = gMeme.height, text = 'new line') {
             type: 'text',
             offset: {
                 x: gMeme.width / 2,
-                y,
+                y: getTextPosition('text', 48, height),
             },
             font: {
                 size: 48,
@@ -171,6 +121,53 @@ function getNewLine(height = gMeme.height, text = 'new line') {
         });
     }
     return gMeme.items[gMeme.items.length - 1];
+}
+
+function clearCanvas() {
+    gMeme = createMeme();
+}
+
+function setCanvasSize(width, height) {
+    gMeme.width = width;
+    gMeme.height = height;
+}
+
+function createImgs() {
+    return [
+        createImg('2.jpg', 'dancing', 'women'),
+        createImg('003.jpg', 'tramp', 'funny', 'politician'),
+        createImg('004.jpg', 'dog', 'love', 'animals'),
+        createImg('005.jpg', 'baby', 'dog', 'animals', 'love'),
+        createImg('5.jpg', 'baby', 'funny', 'angry'),
+        createImg('006.jpg', 'cat', 'animals', 'sleep', 'tired'),
+        createImg('8.jpg', 'actor', 'celeb', 'famous'),
+        createImg('9.jpg', 'baby', 'funny', 'laugh'),
+        createImg('12.jpg', 'famous', 'television', 'israel'),
+        createImg('19.jpg', 'famous', 'comedian', 'funny', 'israel'),
+        createImg('Ancient-Aliens.jpg', 'famous', 'television'),
+        createImg('drevil.jpg', 'actor', 'movies'),
+        createImg('img2.jpg', 'baby', 'dancing', 'funny'),
+        createImg('img4.jpg', 'tramp', 'funny', 'politician'),
+        createImg('img5.jpg', 'baby', 'funny'),
+        createImg('img6.jpg', 'dog', 'funny'),
+        createImg('img11.jpg', 'barack obama', 'politician', 'laugh'),
+        createImg('img12.jpg', 'love'),
+        createImg('leo.jpg', 'leonardo dicaprio', 'actor', 'celeb', 'famous'),
+        createImg('meme1.jpg', 'actor', 'celeb', 'famous'),
+        createImg('One-Does-Not-Simply.jpg', 'actor', 'celeb', 'famous'),
+        createImg('Oprah-You-Get-A.jpg', 'television', 'celeb', 'famous'),
+        createImg('patrick.jpg', 'actor', 'celeb', 'famous'),
+        createImg('putin.jpg', 'putin', 'politician'),
+        createImg('X-Everywhere.jpg', 'movie', 'animation', 'kids'),
+    ];
+}
+
+function createImg(filename, ...keywords) {
+    return {
+        id: gImgNextId++,
+        url: './img/meme/' + filename,
+        keywords,
+    };
 }
 
 function setTextAlign(item, align) {
@@ -219,14 +216,19 @@ function setCanvasImage(item) {
     item.ratio = item.height / gMeme.height;
 }
 
-function setImg(img, url = null) {
+function setCanvasBackground(img, url = null) {
     gMeme.image.data = img;
     gMeme.image.url = (typeof url === 'string') ? url : getBase64Image(img);
 }
 
-function getImg(idx) {
+function getCanvasBackground(idx) {
     if (!idx) return gMeme.image.data;
     return gImgs[idx].url;
+}
+
+function getLastLayer() {
+    const items = gMeme.items;
+    return items[items.length - 1];
 }
 
 function getImgs(...keywords) {

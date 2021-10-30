@@ -23,16 +23,15 @@ function newCanvas(img, isStorage = false) {
     gActiveLayer = null;
     gCtx.clearRect(0, 0, gElCanvas.width, gElCanvas.height);
     setEvents(gElCanvas);
-    const elRemoveBtn = document.querySelector('.remove-button');
     if (isStorage) {
         loadCanvas(img);
         resizeCanvas();
         renderCanvas();
-        elRemoveBtn.classList.remove('hide');
+        toggleHideElement('.remove-button', false);
     } else {
-        const imgURL = getImg(img);
+        const imgURL = getCanvasBackground(img);
         loadImg(imgURL, onLoadComplete, imgURL);
-        elRemoveBtn.classList.add('hide');
+        toggleHideElement('.remove-button', true);
     }
 }
 
@@ -95,60 +94,55 @@ function onChangeFont(el) {
 
 function onSwitchClick() {
     const lines = getTextLines();
-    const elInput = document.querySelector('.control-panel .textinput');
     if (lines.length > 0) {
-        elInput.removeAttribute('disabled');
         if (gActiveLayer && lines.includes(gActiveLayer)) {
             let idx = lines.indexOf(gActiveLayer);
             idx = (idx < lines.length - 1) ? idx + 1 : 0;
-            gActiveLayer = lines[idx];
+            getActiveLayer(lines[idx]);
         } else if (lines.length > 0) {
-            gActiveLayer = lines[0];
+            getActiveLayer(lines[0]);
         }
-        elInput.value = gActiveLayer.text;
     } else {
-        elInput.value = '';
-        elInput.setAttribute('disabled', '');
+        gActiveLayer = null;
+        toggleDisableInput('.control-panel .textinput', true);
+        toggleDisableInput('.control-panel .colorpicker.stroke', true);
+        toggleDisableInput('.control-panel .colorpicker.font', true);
     }
     renderCanvas();
 }
 
 function onRemoveClick() {
-    if (gActiveLayer) {
-        if (gActiveLayer.type === 'text') {
-            const elInput = document.querySelector('.control-panel .textinput');
-            elInput.value = '';
-            elInput.setAttribute('disabled', '');
-        }
-        removeCanvasItem(gActiveLayer);
+    const type = (gActiveLayer) ? gActiveLayer.type : null;
+    if (!gActiveLayer) gActiveLayer = getLastLayer();
+    removeCanvasItem(gActiveLayer);
+    if (type === 'text') {
+        onSwitchClick();
+    } else {
         gActiveLayer = null;
+        renderCanvas();
     }
-    renderCanvas();
 }
 
 function onAddClick() {
-    gActiveLayer = getNewLine(gElCanvas.height, 'new line');
-    const elInput = document.querySelector('.control-panel .textinput');
-    elInput.value = gActiveLayer.text;
-    elInput.removeAttribute('disabled');
+    gActiveLayer = createNewLine(gElCanvas.height, 'new line');
+    getActiveLayer(gActiveLayer);
     renderCanvas();
 }
 
 function onClickSticker(el) {
-    const elInput = document.querySelector('.control-panel .textinput');
-    elInput.setAttribute('disabled', '');
-    elInput.value = '';
     const idx = el.dataset['index'];
-    const sticker = getSticker(idx);
+    const url = getSticker(idx);
     const draw = function (img, ...arg) {
         const size = arg.splice(0, 1)[0];
         const height = (img.height > img.width) ? size : size * (img.height / img.width);
         const width = (img.width > img.height) ? size : size * (img.width / img.height);
         const x = gElCanvas.width / 2 - width / 2;
         const y = gElCanvas.height / 2 - height / 2;
-        drawSticker(addCanvasImage(img, sticker, x, y, width, height));
+        const sticker = addCanvasImage(img, url, x, y, width, height);
+        drawSticker(sticker);
     };
-    loadImg(sticker, draw, 100);
+    loadImg(url, draw, 100);
+    renderCanvas();
 }
 
 function onClearCanvas() {
@@ -169,10 +163,6 @@ function onSaveCanvas() {
     renderCanvas(true);
     const imgContent = gElCanvas.toDataURL('image/jpeg');
     saveCanvas(imgContent);
-    const elStorageBtn = document.querySelector('.storage-button');
-    elStorageBtn.classList.remove('hide');
-    const elRemoveBtn = document.querySelector('.remove-button');
-    elRemoveBtn.classList.remove('hide');
     pageToggle('storage');
 }
 
@@ -181,18 +171,15 @@ function onRemoveCanvas() {
     onClearCanvas();
     const imgs = getStorageImgs();
     if (!imgs || imgs.length === 0) {
-        const elStorageBtn = document.querySelector('.storage-button');
-        elStorageBtn.classList.add('hide');
+        toggleHideElement('.storage-button', true);
         pageToggle('storage');
     } else {
         pageToggle('gallery');
     }
-    const elRemoveBtn = document.querySelector('.remove-button');
-    elRemoveBtn.classList.add('hide');
 }
 
 function onLoadComplete(img, url) {
-    setImg(img, url);
+    setCanvasBackground(img, url);
     resizeCanvas();
     renderCanvas();
 }
@@ -207,35 +194,28 @@ function loadImgFromFile(ev, onImageReady) {
     reader.readAsDataURL(ev.target.files[0]);
 }
 
-function getActiveLayer() {
-    const elInput = document.querySelector('.control-panel .textinput');
-    elInput.value = '';
-    elInput.setAttribute('disabled', '');
-    const item = getActiveItem(gTracking.offset.start.x, gTracking.offset.start.y);
-    gActiveLayer = (item) ? item : null;
+function getActiveLayer(layer) {
+    gActiveLayer = (layer) ? layer : getActiveItem(gTracking.offset.start.x, gTracking.offset.start.y);
     if (gActiveLayer) {
-        const elInput = document.querySelector('.control-panel .textinput');
         switch (gActiveLayer.type) {
             case 'text':
-                elInput.value = (gActiveLayer) ? elInput.value = gActiveLayer.text : '';
-                elInput.removeAttribute('disabled');
-                const elFontStroke = document.querySelector('.control-panel .colorpicker.stroke');
-                elFontStroke.value = gActiveLayer.font.stroke;
-                const elFontColor = document.querySelector('.control-panel .colorpicker.font');
-                elFontColor.value = gActiveLayer.font.color;
+                toggleDisableInput('.control-panel .textinput', false, gActiveLayer.text);
+                toggleDisableInput('.control-panel .colorpicker.stroke', false, gActiveLayer.font.stroke);
+                toggleDisableInput('.control-panel .colorpicker.font', false, gActiveLayer.font.color);
                 break;
             case 'image':
-                elInput.value = '';
-                elInput.setAttribute('disabled', '');
+                toggleDisableInput('.control-panel .textinput', true);
+                toggleDisableInput('.control-panel .colorpicker.stroke', true);
+                toggleDisableInput('.control-panel .colorpicker.font', true);
                 gTracking.shift = {
                     x: gActiveLayer.width / 2,
                     y: gActiveLayer.height / 2,
                 }
                 const isTouch = gTracking.isTouch();
-                let clickOffsetX = (isTouch) ? gActiveLayer.right * 0.8 : gActiveLayer.right * 0.9;
-                let clickOffsetY = (isTouch) ? gActiveLayer.bottom * 0.8 : gActiveLayer.bottom * 0.9;
+                let clickOffsetX = (isTouch) ? gActiveLayer.right * 0.9 : gActiveLayer.right * 0.95;
+                let clickOffsetY = (isTouch) ? gActiveLayer.bottom * 0.85 : gActiveLayer.bottom * 0.90;
                 if ((gTracking.offset.start.x > clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'scale';
-                clickOffsetX = (isTouch) ? gActiveLayer.left * 1.2 : gActiveLayer.left * 1.1;
+                clickOffsetX = (isTouch) ? gActiveLayer.left * 1.2 : gActiveLayer.left * 1.25;
                 if ((gTracking.offset.start.x < clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'rotate';
                 break;
         }
@@ -325,7 +305,7 @@ function setEvents(el, isMouse = true, isTouch = true, isKeyboard = true) {
     };
 }
 
-function resizeCanvas(img = getImg()) {
+function resizeCanvas(img = getCanvasBackground()) {
     const elCanvasPlace = document.querySelector('.canvas-place');
     const height = elCanvasPlace.offsetHeight;
     const width = elCanvasPlace.offsetWidth;
@@ -339,11 +319,11 @@ function resizeCanvas(img = getImg()) {
 }
 
 function renderCanvas(isExport = false) {
-    const canvas = getMeme();
+    const meme = getMeme();
     if (isExport) gActiveLayer = null;
-    if (canvas.image.data) gCtx.drawImage(canvas.image.data, 0, 0, gElCanvas.width, gElCanvas.height);
+    if (meme.image.data) gCtx.drawImage(meme.image.data, 0, 0, gElCanvas.width, gElCanvas.height);
     gCtx.restore();
-    canvas.items.forEach(item => {
+    meme.items.forEach(item => {
         switch (item.type) {
             case 'text':
                 drawText(item)

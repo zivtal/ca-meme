@@ -27,3 +27,25 @@ function pageToggle(page) {
         elGrid.classList.toggle('hide');
     }
 }
+
+function toggleHideElement(elSelector, isHide) {
+    const el = document.querySelector(elSelector);
+    if (isHide === null) {
+        el.classList.toggle('hide');
+    } else if (isHide) {
+        el.classList.add('hide');
+    } else {
+        el.classList.remove('hide');
+    }
+}
+
+function toggleDisableInput(elSelector, isDisabled, value) {
+    const el = document.querySelector(elSelector);
+    if (!value && el.type === 'text') { el.value = '' } else { if (value) el.value = value };
+    if (isDisabled === null) isDisabled = el.hasAttribute('disabled');
+    if (isDisabled) {
+        el.setAttribute('disabled', '');
+    } else {
+        el.removeAttribute('disabled');
+    }
+}

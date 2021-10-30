@@ -6,21 +6,19 @@ var gKeySelected;
 
 function initGrid(mode) {
     const elGrid = document.querySelector('.grid-container');
-    const elControl = elGrid.querySelector('.grid-control')
-    const elStorageBtn = document.querySelector('.storage-button');
     const storageImgs = getStorageImgs();
     if (!storageImgs || storageImgs.length === 0) {
-        elStorageBtn.classList.add('hide');
+        toggleHideElement('.storage-button', true);
     } else {
-        elStorageBtn.classList.remove('hide');
+        toggleHideElement('.storage-button', false);
     }
     switch (mode) {
         case 'storage':
-            elControl.classList.add('hide');
+            toggleHideElement('.grid-control', true);
             renderStorageGrid();
             break;
         case 'gallery':
-            elControl.classList.remove('hide');
+            toggleHideElement('.grid-control', false);
             createKeywords();
             renderGalleryGrid();
             break;
@@ -53,7 +51,7 @@ function renderGalleryGrid(keyword) {
     elTitle.innerText = 'Gallery';
     // Set grid template mode
     const elGrid = document.querySelector('.grid-content');
-    if (imgs.length < 3) elGrid.style = 'grid-template-columns: repeat(auto-fill, minmax(1px, 1fr));';
+    if (imgs.length < 4) { elGrid.style = 'grid-template-columns: repeat(auto-fill, minmax(1px, 1fr));'; } else { elGrid.style = ''; }
     // Generate images
     elGrid.innerHTML = '';
     imgs.forEach(function (img) { loadImg(img.url, createThumbSize, img.id, false) });
@@ -75,7 +73,7 @@ function renderStorageGrid() {
     elTitle.innerText = 'Storage';
     // Set grid template mode
     const elGrid = document.querySelector('.grid-content');
-    if (imgs.length < 3) elGrid.style = 'grid-template-columns: repeat(auto-fill, minmax(1px, 1fr));';
+    if (imgs.length < 4) { elGrid.style = 'grid-template-columns: repeat(auto-fill, minmax(1px, 1fr));'; } else { elGrid.style = ''; }
     // Generate images
     elGrid.innerHTML = '';
     imgs.forEach(function (img, idx) { loadImg(img, createThumbSize, idx, true) });

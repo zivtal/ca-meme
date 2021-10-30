@@ -7,7 +7,7 @@ function loadImg(url, func, ...arg) {
     return img;
 }
 
-function getBase64Image(img, pixels = 300) {
+function getBase64Image(img, pixels = 800) {
     if (typeof img !== 'object') return img;
     const canvas = document.createElement("canvas");
     const ratio = img.width / img.height;
