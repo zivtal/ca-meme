@@ -1,7 +1,6 @@
 .header-container {
-  position: relative;
   user-select: none;
-  z-index: 2000;
+  margin-bottom: 25px;
 }
 
 /* set flex */
@@ -59,7 +58,6 @@
 @media screen and (max-width: 760px) {
   .main-header nav > input {
     position: relative;
-    top: 10px;
     cursor: pointer;
     right: 0.2rem;
     height: 2.5rem;
@@ -71,7 +69,7 @@
   .main-header nav > span {
     position: relative;
     display: block;
-    right: -0.05rem;
+    right: -0.1rem;
     width: 2.5rem;
     height: 0.3rem;
     background-color: blue;
@@ -80,15 +78,15 @@
   }
 
   .main-header nav > span:nth-last-child(4) {
-    top: -1.8rem;
+    top: -2.4rem;
   }
 
   .main-header nav > span:nth-last-child(3) {
-    top: -1.3rem;
+    top: -1.9rem;
   }
 
   .main-header nav > span:nth-last-child(2) {
-    top: -0.9rem;
+    top: -1.5rem;
   }
 
   .main-header nav > input:checked ~ ul {
