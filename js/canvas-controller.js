@@ -275,6 +275,7 @@ function endTracking() {
 }
 
 function keyDown(ev) {
+    ev.stopPropagation();
     if (ev.key.substr(0, 5) === 'Arrow') onChangePosition(ev.key.substr(5, 5));
 }
 
