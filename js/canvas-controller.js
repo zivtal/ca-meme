@@ -19,11 +19,13 @@ function initCanvas() {
 
 function newCanvas(img, isStorage = false) {
     clearCanvas();
+    clearActiveLayer();
     pageToggle('editor');
-    gActiveLayer = null;
     gCtx.clearRect(0, 0, gElCanvas.width, gElCanvas.height);
     setEvents(gElCanvas);
-    if (isStorage) {
+    if (typeof img === 'object' && img.nodeName === 'IMG') {
+        onLoadComplete(img, img.src);
+    } else if (isStorage) {
         loadCanvas(img);
         resizeCanvas();
         renderCanvas();
@@ -149,7 +151,7 @@ function onClearCanvas() {
 }
 
 function onUploadClick(ev) {
-    loadImgFromFile(ev, onLoadComplete);
+    loadImgFromFile(ev, newCanvas);
 }
 
 function onDownloadClick(el) {
@@ -177,6 +179,7 @@ function onRemoveCanvas() {
 }
 
 function onLoadComplete(img, url) {
+    if (typeof url !== 'string') url = img.src;
     setCanvasBackground(img, url);
     resizeCanvas();
     renderCanvas();
@@ -203,7 +206,11 @@ function clearActiveLayer() {
 }
 
 function getActiveLayer(layer) {
-    gActiveLayer = (layer) ? layer : getActiveItem(gTracking.offset.start.x, gTracking.offset.start.y);
+    if (layer) {
+        gActiveLayer = layer;
+    } else if (gTracking.offset.start) {
+        gActiveLayer = getActiveItem(gTracking.offset.start.x, gTracking.offset.start.y);
+    }
     if (gActiveLayer) {
         toggleDisableInput('.control-panel .set-opacity', false, gActiveLayer.opacity);
         switch (gActiveLayer.type) {
