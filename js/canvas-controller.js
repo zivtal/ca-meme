@@ -19,10 +19,6 @@ function initCanvas(img, isStorage = false) {
     gCtx = gElCanvas.getContext("2d");
     gCtx.clearRect(0, 0, gElCanvas.width, gElCanvas.height);
     setEvents(gElCanvas);
-    window.addEventListener('resize', () => {
-        resizeCanvas();
-        renderCanvas();
-    });
     const elRemoveBtn = document.querySelector('.remove-button');
     if (isStorage) {
         loadCanvas(img);
@@ -306,6 +302,10 @@ function onChangePosition(direction) {
 }
 
 function setEvents(el, isMouse = true, isTouch = true, isKeyboard = true) {
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+        renderCanvas();
+    });
     if (isMouse) {
         el.addEventListener('mousedown', startTracking);
         el.addEventListener('mousemove', moveTracking);
@@ -317,7 +317,7 @@ function setEvents(el, isMouse = true, isTouch = true, isKeyboard = true) {
         el.addEventListener('touchend', endTracking);
     }
     if (isKeyboard) {
-        window.addEventListener('keydown', keyDown);
+        // window.addEventListener('keydown', keyDown);
     };
 }
 
