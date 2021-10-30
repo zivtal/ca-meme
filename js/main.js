@@ -3,7 +3,7 @@
 function init() {
     initCanvasModel();
     initCanvas();
-    initGrid();
+    pageToggle('gallery');
 }
 
 function pageToggle(page) {
@@ -12,6 +12,8 @@ function pageToggle(page) {
     if (page) {
         switch (page) {
             case 'gallery':
+            case 'storage':
+                initGrid(page);
                 elCanvas.classList.add('hide');
                 elGrid.classList.remove('hide');
                 break;

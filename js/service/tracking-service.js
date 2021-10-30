@@ -3,27 +3,30 @@ const gTracking = {
         start: null,
         end: null,
     },
+    shift: {
+        x: 0,
+        y: 0,
+    },
     radius: null,
     isActive: false,
+    isPinch: false,
     change: function () {
         if (!this.offset.end) return {
             x: 0,
             y: 0,
         }
         return {
-            x: this.offset.end.x - this.offset.start.x,
-            y: this.offset.end.y - this.offset.start.y,
+            x: this.offset.end.x - (this.offset.start.x - this.shift.x),
+            y: this.offset.end.y - (this.offset.start.y - this.shift.y),
         }
     },
     direction(min = (this.radius) ? this.radius.x * 1.5 : 20) {
         const directions = {};
         if (!this.isPinch) {
-            const change = this.change();
-            if (change.x && Math.abs(change.x) > min)
-                directions.pan = (change.x > 0) ? 'right' : 'left';
-            if (change.y && Math.abs(change.y) > min)
-                directions.tilt = (change.y > 0) ? 'down' : 'up';
-            console.log(directions);
+            if (this.change().x && Math.abs(this.change().x) > min)
+                directions.pan = (this.change.x > 0) ? 'right' : 'left';
+            if (this.change().y && Math.abs(this.change().y) > min)
+                directions.tilt = (this.change().y > 0) ? 'down' : 'up';
             return directions
         }
     },
@@ -43,30 +46,42 @@ const gTracking = {
         }
         if (!ev.type.includes('mouse')) ev = ev.changedTouches[0];
         return {
-            x: ev.pageX - ev.target.offsetLeft,
-            y: ev.pageY - ev.target.offsetTop,
+            x: ev.pageX - ev.target.offsetLeft - this.shift.x,
+            y: ev.pageY - ev.target.offsetTop - this.shift.y,
         };
     },
-    start(ev, _this = gTracking) {
+    start(ev) {
         ev.preventDefault();
         ev.stopPropagation();
-        _this.isActive = true;
-        _this.radius = null;
-        _this.isPinch = (ev.touches) ? (ev.touches.length === 2) : false;
-        if (ev.touches) _this.radius = {
+        this.isActive = true;
+        this.radius = null;
+        this.offset.start = null;
+        this.offset.end = null;
+        this.shift = {
+            x: 0,
+            y: 0,
+        }
+        this.isPinch = (ev.touches) ? (ev.touches.length === 2) : false;
+        if (ev.touches) this.radius = {
             x: ev.touches[0].radiusX,
             y: ev.touches[0].radiusY,
         };
-        _this.offset.end = null;
-        _this.offset
-        _this.offset.start = _this.getPosition(ev);
+        if (this.isPinch) {
+            this.offset = this.getPosition(ev);
+        } else {
+            this.offset.start = this.getPosition(ev);
+        }
     },
-    move(ev, _this = gTracking) {
-        if (_this.isActive) _this.offset.end = _this.getPosition(ev);
+    move(ev) {
+        if (this.isActive) {
+            if (this.isPinch) {
+                this.offset = this.getPosition(ev);
+            } else {
+                this.offset.end = this.getPosition(ev);
+            }
+        }
     },
-    stop(_this = gTracking) {
-        _this.isActive = false;
-        _this.offset.start = null;
-        _this.offset.end = null;
+    stop() {
+        this.isActive = false;
     },
 }

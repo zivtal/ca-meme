@@ -6,12 +6,19 @@
 
 body {
   margin: 0;
+  background-color: whitesmoke;
+  font-family: cursive, Arial, Helvetica, sans-serif;
 }
 
 /* HELPERS */
 
 .flex {
   display: flex;
+}
+
+.flex.align-center {
+  justify-content: center;
+  align-items: center;
 }
 
 .hide {
@@ -23,16 +30,97 @@ body {
   max-width: 980px;
 }
 
-.grid-container {
+/* Buttons */
+
+.main-btn {
+  display: inline-flex;
+  font-family: cursive, Arial, Helvetica, sans-serif;
+  align-items: center;
+  font-size: 0.9rem;
+  color: black;
+  text-decoration: none;
+  transition: 0.5s;
+  border: 1px solid silver;
+  border-radius: 25px;
+  height: 0.8rem;
+  padding: 0.75rem;
+  margin: 0.1rem 0.15rem;
+}
+
+.remove-button {
+  display: flex;
+}
+
+.grid-control .keywords span:hover,
+.grid-control .search input:hover,
+.main-btn:hover {
+  color: blue;
+  box-shadow: inset 0px -6px 0 gold;
+}
+
+/* Grid */
+
+.grid-container h1 {
+  text-align: center;
+}
+
+.grid-control {
+  user-select: none;
+  /* min-height: 100px; */
+  overflow: hidden;
+  transition: 0.5s;
+}
+
+.grid-control .search {
+  margin: 20px;
+  flex-grow: 1;
+}
+
+.grid-control .search button {
+  float: right;
+  border-radius: 3rem;
+  height: 2.5rem;
+  position: relative;
+  top: -5px;
+  width: 65px;
+}
+
+.grid-control .search div {
+  padding-inline-start: 15px;
+}
+
+.grid-control .search input {
+  float: left;
+  width: calc(100% - 90px);
+  min-width: 100px;
+  border-radius: 3rem;
+  height: 2.5rem;
+  transition: 0.5s;
+}
+
+.grid-control .keywords {
+  margin: 20px;
+  flex-grow: 1;
+}
+
+.grid-control .keywords span {
+  margin: 5px 10px;
+  display: inline-block;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.grid-content {
   margin: auto;
+  margin-top: 30px;
   display: grid;
   gap: 20px;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  grid-auto-rows: 150px;
+  grid-template-columns: repeat(auto-fit, minmax(1px, 1fr));
   grid-auto-flow: dense;
 }
 
-.grid-container img {
+.grid-content img {
+  cursor: pointer;
   width: 100%;
   height: 100%;
   border-radius: 10px;
@@ -40,51 +128,142 @@ body {
   transition: 0.5s;
 }
 
-.grid-container img:hover {
+.grid-content img:hover {
+  opacity: 1;
   transform: scale(105%);
 }
 
 /* meme board */
 .meme-board {
   width: 100%;
-  min-height: 600px;
+  height: 80vh;
   background-color: whitesmoke;
+}
+
+.maintoolbar {
+  flex-wrap: wrap;
+  margin: 10px;
+}
+
+.maintoolbar > input {
+  display: none;
+}
+
+.maintoolbar > a,
+.maintoolbar > label {
+  min-width: 80px;
 }
 
 /* control panel */
 .control-panel {
   flex-direction: column;
-  min-width: 320px;
-  margin-top: 20px;
+  margin-top: 5px;
 }
 
-.control-panel div {
+.control-panel .ctrlflex {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
 }
 
-.control-panel input {
+.line {
+  flex: 1;
+}
+
+.control-panel .textinput {
+  text-align: center;
   border: 2px solid silver;
   border-radius: 10px;
-  font-family: Impact;
-  font-size: 38px;
+  font-family: Impact, Arial, Helvetica, sans-serif;
+  font-size: 32px;
   margin: 10px;
 }
 
-.control-panel img {
-  margin-inline-end: 15px;
-  padding: 7px;
-  height: 40px;
+.control-panel .colorpicker {
+  opacity: 0;
+  position: absolute;
   width: 40px;
+  height: 40px;
+  z-index: 1000;
+}
+
+.control-panel .fontfamily,
+.control-panel .ctrlbtn {
+  cursor: pointer;
+  margin: 5px;
   background-color: white;
   border: 2px solid silver;
   border-radius: 5px;
   transition: 0.5s;
 }
 
-.control-panel img:hover {
+.control-panel .line > img,
+.control-panel .line span > img {
+  padding: 3px;
+}
+
+.move-control {
+  align-self: flex-start;
+  touch-action: none;
+  height: 100px;
+  width: 100px;
+  background-color: aqua;
+  border-radius: 50%;
+  padding: 5px;
+  margin-inline-start: 15px;
+  margin-inline-end: 10px;
+  background-color: rgba(200, 200, 200, 0.5);
+  border: 2px solid silver;
+}
+
+.move-control img {
+  display: block;
+  margin: auto;
+  opacity: 0.7;
+  height: 100%;
+  transition: 0.5s;
+}
+
+.move-control img:hover {
+  transform: scale(120%);
+}
+
+.move-control .up,
+.move-control .down {
+  margin-top: 3%;
+  width: 100%;
+  height: 25%;
+}
+
+.move-control .left,
+.move-control .right {
+  margin-top: 10%;
+  margin-bottom: 10%;
+  height: 25%;
+  width: 50%;
+}
+
+.move-control .left,
+.move-control .left img {
+  float: left;
+}
+
+.move-control .right,
+.move-control .right img {
+  float: right;
+}
+
+.control-panel .stickers img {
+  padding: 2px;
+  height: 65px;
+  width: 65px;
+  object-fit: contain;
+}
+
+.control-panel .colorpicker:hover ~ img,
+.control-panel .ctrlbtn:hover {
   transform: scale(115%);
   border: 3px solid black;
 }
@@ -93,28 +272,83 @@ body {
 
 .canvas-place {
   flex-grow: 1;
-  padding-top: 25px;
-  padding-inline-start: 25px;
-  padding-inline-end: 25px;
 }
 
 .meme-canvas {
   position: relative;
-  outline: 1px solid black;
+}
+
+@media screen and (max-width: 900px) {
+  .control-panel .textinput {
+    font-size: 24px;
+  }
 }
 
 @media screen and (max-width: 720px) {
-  .meme-board {
+  .control-panel .fontfamily,
+  .control-panel .line > img,
+  .control-panel .line span > img {
+    height: 45px;
+  }
+  .control-panel .line > img,
+  .control-panel .line span > img {
+    width: 45px;
+  }
+
+  .meme-board .canvas {
     flex-direction: column;
   }
 
   .canvas-place {
     max-width: 100%;
+    min-height: 25vh;
+  }
+
+  .grid-control {
+    flex-direction: column;
   }
 }
 
 @media screen and (min-width: 720px) {
   .canvas-place {
+    padding-top: 15px;
     max-width: 50%;
+    min-height: 80vh;
+  }
+
+  .control-panel {
+    max-width: 50%;
+    margin-inline-start: 10px;
+    border-inline-start: 1px solid silver;
+  }
+
+  .control-panel .fontfamily,
+  .control-panel .line > img,
+  .control-panel .line span > img {
+    height: 38px;
+  }
+  .control-panel .line > img,
+  .control-panel .line span > img {
+    width: 38px;
+  }
+
+  .grid-control {
+    height: 100px;
+  }
+
+  .grid-content {
+    grid-auto-rows: 5px;
+  }
+
+  .grid-content img {
+    opacity: 0.8;
+  }
+
+  .grid-control .keywords {
+    max-width: 50%;
+  }
+
+  .grid-control:hover {
+    height: 230px;
   }
 }
