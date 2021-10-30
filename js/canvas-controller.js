@@ -155,6 +155,7 @@ function onUploadClick(ev) {
 }
 
 function onDownloadClick(el) {
+    clearActiveLayer();
     const imgContent = gElCanvas.toDataURL('image/jpeg');
     el.href = imgContent;
 }
