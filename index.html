@@ -68,10 +68,14 @@
                                 <input class="colorpicker font" type="color" value="#ffffff" oninput="onChangeColor(this)"></input>
                                 <img class="ctrlbtn" src="./img/icons/paint-board-and-brush.png">
                             </span>
-                            <select class="fontfamily" onchange="onChangeFont(this)">
+                            <select class="fontfamily" onchange="onChangeFont(this)" disabled>
                                 <option>Impact</option>
                                 <option>Arial</option>
                             </select> 
+                            <span>
+                                <input type="range" id="input-opacity" class="set-opacity" min="0" max="100" value="100" oninput="onChangeOpacity(this)" disabled>
+                                <label for="input-opacity">Opacity</label>
+                            </span>
                         </div>
                         <div class="move-control">
                             <div class="up" onclick="onChangePosition('up')"><img src="img/icons/arrow-up.png"></div>

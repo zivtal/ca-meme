@@ -98,7 +98,7 @@ function getTextPosition(type, size, height) {
     }
 }
 
-function createNewLine(height = gMeme.height, text = 'new line') {
+function addNewLine(height = gMeme.height, text = 'new line') {
     const lastItem = gMeme.items[gMeme.items.length - 1];
     if ((!gMeme.items.length) || lastItem.type !== 'text' || lastItem.text) {
         gMeme.items.push({
@@ -114,6 +114,7 @@ function createNewLine(height = gMeme.height, text = 'new line') {
                 stroke: '#000000',
                 family: 'Impact',
             },
+            opacity: 100,
             mergin: 0,
             width: 0,
             text,
@@ -194,6 +195,7 @@ function addCanvasImage(img, url, x, y, xSize, ySize) {
         },
         width: xSize,
         height: ySize,
+        opacity: 100,
         degrees: 0,
         left: x,
         right: x + xSize,

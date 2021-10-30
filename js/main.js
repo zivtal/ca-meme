@@ -41,7 +41,17 @@ function toggleHideElement(elSelector, isHide) {
 
 function toggleDisableInput(elSelector, isDisabled, value) {
     const el = document.querySelector(elSelector);
-    if (!value && el.type === 'text') { el.value = '' } else { if (value) el.value = value };
+    // if (!value && el.type === 'text') { el.value = '' } else { if (value) el.value = value };
+    if (value) {
+        switch (el.type) {
+            case 'range':
+                if (typeof value === 'number') el.value = value;
+                break;
+            default:
+                el.value = value;
+                break;
+        }
+    } else if (el.type === 'text') el.value = '';
     if (isDisabled === null) isDisabled = el.hasAttribute('disabled');
     if (isDisabled) {
         el.setAttribute('disabled', '');
