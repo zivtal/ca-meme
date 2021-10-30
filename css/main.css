@@ -150,7 +150,6 @@ body {
 
 /* control panel */
 .control-panel {
-  touch-action: none;
   user-select: none;
   flex-direction: column;
   margin-top: 5px;
@@ -187,6 +186,7 @@ body {
 
 .control-panel .fontfamily,
 .control-panel .ctrlbtn {
+  touch-action: none;
   cursor: pointer;
   margin: 5px;
   background-color: white;
