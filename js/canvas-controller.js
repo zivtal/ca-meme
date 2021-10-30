@@ -317,7 +317,7 @@ function setEvents(el, isMouse = true, isTouch = true, isKeyboard = true) {
         el.addEventListener('touchend', endTracking);
     }
     if (isKeyboard) {
-        // window.addEventListener('keydown', keyDown);
+        window.addEventListener('keydown', keyDown);
     };
 }
 

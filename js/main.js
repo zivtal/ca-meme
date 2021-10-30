@@ -2,7 +2,6 @@
 
 function init() {
     initCanvasModel();
-    initCanvas();
     pageToggle('gallery');
 }
 
