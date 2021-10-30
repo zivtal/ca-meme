@@ -93,14 +93,15 @@ function onChangeFont(el) {
 }
 
 function onSwitchClick() {
-    const lines = getTextLines();
-    if (lines.length > 0) {
-        if (gActiveLayer && lines.includes(gActiveLayer)) {
-            let idx = lines.indexOf(gActiveLayer);
-            idx = (idx < lines.length - 1) ? idx + 1 : 0;
-            getActiveLayer(lines[idx]);
-        } else if (lines.length > 0) {
-            getActiveLayer(lines[0]);
+    const meme = getMeme()
+    const items = meme.items;
+    if (items.length > 0) {
+        if (gActiveLayer) {
+            let idx = items.indexOf(gActiveLayer);
+            idx = (idx < items.length - 1) ? idx + 1 : 0;
+            getActiveLayer(items[idx]);
+        } else {
+            getActiveLayer(items[0]);
         }
     } else clearActiveLayer();
 }
@@ -386,8 +387,10 @@ function markActiveLayer(item) {
             gCtx.rect(item.left, item.top, item.width, item.height);
             break;
         case 'image':
+            gCtx.strokeStyle = 'red';
+            gCtx.rect(item.left - 10, item.top - 10, item.width + 20, item.height + 20);
             gCtx.drawImage(gIcons.rotate, item.left, item.bottom - 15, 20, 20);
-            gCtx.drawImage(gIcons.scale, item.right - 15, item.bottom - 15, 20, 20);
+            gCtx.drawImage(gIcons.scale, item.right - 20, item.bottom - 15, 20, 20);
             break;
     }
     gCtx.stroke();
