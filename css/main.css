@@ -205,6 +205,7 @@ body {
 }
 
 .move-control {
+  touch-action: manipulation;
   height: 100px;
   width: 100px;
   background-color: aqua;
