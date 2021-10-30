@@ -179,9 +179,13 @@ function onSaveCanvas() {
 function onRemoveCanvas() {
     removeCanvas();
     onClearCanvas();
-    if (getStorageImgs().length === 0) {
+    const imgs = getStorageImgs();
+    if (!imgs || imgs.length === 0) {
         const elStorageBtn = document.querySelector('.storage-button');
         elStorageBtn.classList.add('hide');
+        pageToggle('storage');
+    } else {
+        pageToggle('gallery');
     }
     const elRemoveBtn = document.querySelector('.remove-button');
     elRemoveBtn.classList.add('hide');
@@ -334,7 +338,7 @@ function renderCanvas(isExport = false) {
     const canvas = getMeme();
     if (isExport) gActiveLayer = null;
     gCtx.save();
-    gCtx.drawImage(canvas.image.data, 0, 0, gElCanvas.width, gElCanvas.height);
+    if (canvas.image.data) gCtx.drawImage(canvas.image.data, 0, 0, gElCanvas.width, gElCanvas.height);
     gCtx.restore();
     canvas.items.forEach(item => {
         switch (item.type) {

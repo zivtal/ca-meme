@@ -48,6 +48,9 @@ function renderGalleryGrid(keyword) {
     // get image list
     const imgs = (!keyword) ? getImgs() : getImgs(keyword);
     if (!imgs.length) return;
+    // Set header
+    const elTitle = document.querySelector('.grid-container h1');
+    elTitle.innerText = 'Gallery';
     // Set grid template mode
     const elGrid = document.querySelector('.grid-content');
     if (imgs.length < 3) elGrid.style = 'grid-template-columns: repeat(auto-fill, minmax(1px, 1fr));';
@@ -63,7 +66,13 @@ function renderGalleryGrid(keyword) {
 
 function renderStorageGrid() {
     let imgs = getStorageImgs();
-    if (!imgs.length) return;
+    if (!imgs || !imgs.length) {
+        pageToggle('gallery');
+        return;
+    }
+    // Set header
+    const elTitle = document.querySelector('.grid-container h1');
+    elTitle.innerText = 'Storage';
     // Set grid template mode
     const elGrid = document.querySelector('.grid-content');
     if (imgs.length < 3) elGrid.style = 'grid-template-columns: repeat(auto-fill, minmax(1px, 1fr));';
