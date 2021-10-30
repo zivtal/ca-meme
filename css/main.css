@@ -156,6 +156,7 @@ body {
 
 /* control panel */
 .control-panel {
+  user-select: none;
   flex-direction: column;
   margin-top: 5px;
 }
