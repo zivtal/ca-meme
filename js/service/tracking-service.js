@@ -73,6 +73,8 @@ const gTracking = {
         }
     },
     move(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
         if (this.isActive) {
             if (this.isPinch) {
                 this.offset = this.getPosition(ev);
