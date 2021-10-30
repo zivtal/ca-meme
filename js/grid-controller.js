@@ -8,7 +8,8 @@ function initGrid(mode) {
     const elGrid = document.querySelector('.grid-container');
     const elControl = elGrid.querySelector('.grid-control')
     const elStorageBtn = document.querySelector('.storage-button');
-    if (getStorageImgs().length === 0) {
+    const storageImgs = getStorageImgs();
+    if (!storageImgs || storageImgs.length === 0) {
         elStorageBtn.classList.add('hide');
     } else {
         elStorageBtn.classList.remove('hide');

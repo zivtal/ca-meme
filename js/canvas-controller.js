@@ -9,7 +9,6 @@ var gIcons;
 
 function initCanvas(img, isStorage = false) {
     clearCanvas();
-    renderCanvas();
     createIcons();
     renderCanvasPanel();
     pageToggle('editor');
@@ -31,7 +30,8 @@ function initCanvas(img, isStorage = false) {
         renderCanvas();
         elRemoveBtn.classList.remove('hide');
     } else {
-        loadImg(getImg(img), onLoadComplete);
+        const imgURL = getImg(img);
+        loadImg(imgURL, onLoadComplete, imgURL);
         elRemoveBtn.classList.add('hide');
     }
 }
@@ -146,7 +146,7 @@ function onClickSticker(el) {
         const width = (img.width > img.height) ? size : size * (img.width / img.height);
         const x = gElCanvas.width / 2 - width / 2;
         const y = gElCanvas.height / 2 - height / 2;
-        drawImg(addCanvasImage(img, x, y, width, height))
+        drawSticker(addCanvasImage(img, sticker, x, y, width, height));
     };
     loadImg(sticker, draw, 100);
 }
@@ -173,6 +173,7 @@ function onSaveCanvas() {
     elStorageBtn.classList.remove('hide');
     const elRemoveBtn = document.querySelector('.remove-button');
     elRemoveBtn.classList.remove('hide');
+    pageToggle('storage');
 }
 
 function onRemoveCanvas() {
@@ -186,8 +187,8 @@ function onRemoveCanvas() {
     elRemoveBtn.classList.add('hide');
 }
 
-function onLoadComplete(img) {
-    setImg(img);
+function onLoadComplete(img, url) {
+    setImg(img, url);
     resizeCanvas();
     renderCanvas();
 }
@@ -250,7 +251,7 @@ function moveTracking(ev) {
     if (gTracking.isActive && gActiveLayer) {
         // alert(JSON.stringify(gTracking.change()));
         const change = gTracking.change();
-        console.log(gTrkMode);
+        // console.log(gTrkMode);
         switch (gTrkMode) {
             case 'scale':
                 resizeCanvasItem(gActiveLayer, change.x, change.y);
@@ -274,21 +275,25 @@ function endTracking() {
 }
 
 function keyDown(ev) {
+    if (ev.key.substr(0, 5) === 'Arrow') onChangePosition(ev.key.substr(5, 5));
+}
+
+function onChangePosition(direction) {
     if (gActiveLayer) {
-        switch (ev.key) {
-            case 'ArrowUp':
+        switch (direction.toLowerCase()) {
+            case 'up':
                 if (gActiveLayer.offset.y > -gActiveLayer.height * 0.8) gActiveLayer.offset.y--;
                 renderCanvas()
                 break;
-            case 'ArrowDown':
+            case 'down':
                 if (gActiveLayer.offset.y < gElCanvas.height - gActiveLayer.height * 0.2) gActiveLayer.offset.y++;
                 renderCanvas()
                 break;
-            case 'ArrowLeft':
+            case 'left':
                 if (gActiveLayer.offset.x > -gActiveLayer.width * 0.8) gActiveLayer.offset.x--;
                 renderCanvas()
                 break;
-            case 'ArrowRight':
+            case 'right':
                 if (gActiveLayer.offset.x < gElCanvas.width - gActiveLayer.width * 0.2) gActiveLayer.offset.x++;
                 renderCanvas()
                 break;
@@ -316,7 +321,7 @@ function resizeCanvas(img = getImg()) {
     const elCanvasPlace = document.querySelector('.canvas-place');
     const height = elCanvasPlace.offsetHeight;
     const width = elCanvasPlace.offsetWidth;
-    if ((!height) || (!width)) return;
+    if ((!height) || (!width) || (!img)) return;
     const ratio = img.width / img.height;
     const size = (height > width) ? width : height;
     gElCanvas.width = (height > width) ? size : size * ratio;
@@ -327,14 +332,9 @@ function resizeCanvas(img = getImg()) {
 
 function renderCanvas(isExport = false) {
     const canvas = getMeme();
-    if (!canvas.img) return;
     if (isExport) gActiveLayer = null;
     gCtx.save();
-    if (/^data:image\/(png|jpg|jpeg);base64,/.test(canvas.img)) {
-        loadImg(canvas.img, img => gCtx.drawImage(img, 0, 0, gElCanvas.width, gElCanvas.height));
-    } else {
-        gCtx.drawImage(canvas.img, 0, 0, gElCanvas.width, gElCanvas.height);
-    }
+    gCtx.drawImage(canvas.image.data, 0, 0, gElCanvas.width, gElCanvas.height);
     gCtx.restore();
     canvas.items.forEach(item => {
         switch (item.type) {
@@ -342,7 +342,7 @@ function renderCanvas(isExport = false) {
                 drawText(item)
                 break;
             case 'image':
-                drawImg(item);
+                drawSticker(item);
                 break;
         }
     });
@@ -387,24 +387,14 @@ function markActiveLayer(item) {
     gCtx.stroke();
 }
 
-function drawImg(item) {
+function drawSticker(item) {
     gCtx.save();
-    const rotate = () => {
+    if (item.degrees) {
         gCtx.translate(item.offset.x + item.width / 2, item.offset.y + item.height / 2);
         gCtx.rotate(item.degrees);
-    }
-    const draw = (img, item) => {
-        if (item.degrees) {
-            rotate();
-            gCtx.drawImage(img, -item.width / 2, -item.height / 2, item.width, item.height);
-        } else {
-            gCtx.drawImage(img, item.offset.x, item.offset.y, item.width, item.height);
-        }
-    }
-    if (/^data:image\/(png|jpg|jpeg);base64,/.test(item.img)) {
-        loadImg(item.image, draw);
+        gCtx.drawImage(item.image.data, -item.width / 2, -item.height / 2, item.width, item.height);
     } else {
-        draw(item.image, item);
+        gCtx.drawImage(item.image.data, item.offset.x, item.offset.y, item.width, item.height);
     }
     gCtx.restore();
     setCanvasImage(item);

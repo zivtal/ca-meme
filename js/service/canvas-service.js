@@ -19,34 +19,37 @@ function initCanvasModel() {
 function loadMemeFromStorage() {
     gMemeStorage = loadFromStorage('meme');
     if (!gMemeStorage || gMemeStorage.length === 0) {
-        gMemeStorage = [];
         return;
     }
     gMemeStorage.forEach(canvas => {
         const img = new Image();
         img.onload = function () {
-            canvas.img = img;
+            canvas.image.data = img;
         }
-        img.src = canvas.img;
+        img.src = canvas.image.url;
         const imgs = canvas.items.filter(item => item.type === 'image');
         imgs.forEach(item => {
             const img = new Image();
             img.onload = function () {
-                item.image = img;
+                item.image.data = img;
             }
-            img.src = item.image;
+            img.src = item.image.url;
         });
     });
 }
 
 function saveMemeToStorage() {
-    gMemeStorage.forEach(canvas => {
-        canvas.img = getBase64Image(canvas.img)
+    let memeCopy = JSON.stringify(gMemeStorage);
+    memeCopy = JSON.parse(memeCopy);
+    memeCopy.forEach(canvas => {
+        if (!canvas.image.url) canvas.image.url = getBase64Image(canvas.image.data);
         const imgs = canvas.items.filter(item => item.type === 'image');
-        imgs.forEach(item => item.image = getBase64Image(item.image));
+        imgs.forEach(item => {
+            if (!item.image.url) getBase64Image(item.image.data);
+            item.image.data = null
+        });
     });
     saveToStorage('meme', gMemeStorage);
-    setTimeout(loadMemeFromStorage(), 1000);
 }
 
 
@@ -74,7 +77,10 @@ function createStickers() {
 function createMeme() {
     return {
         items: [],
-        img: null,
+        image: {
+            data: null,
+            url: null,
+        },
         width: null,
         height: null,
     }
@@ -181,7 +187,7 @@ function setTextAlign(item, align) {
     }
 }
 
-function addCanvasImage(image, x, y, xSize, ySize) {
+function addCanvasImage(img, url, x, y, xSize, ySize) {
     gMeme.items.push({
         id: gItemIdx++,
         type: 'image',
@@ -196,7 +202,10 @@ function addCanvasImage(image, x, y, xSize, ySize) {
         right: x + xSize,
         top: y,
         bottom: y + ySize,
-        image,
+        image: {
+            data: img,
+            url: (url) ? url : getBase64Image(img),
+        },
         ratio: ySize / gMeme.height,
     });
     return gMeme.items[gMeme.items.length - 1];
@@ -210,12 +219,13 @@ function setCanvasImage(item) {
     item.ratio = item.height / gMeme.height;
 }
 
-function setImg(img) {
-    gMeme.img = img;
+function setImg(img, url = null) {
+    gMeme.image.data = img;
+    gMeme.image.url = (typeof url === 'string') ? url : getBase64Image(img);
 }
 
 function getImg(idx) {
-    if (!idx) return gMeme.img;
+    if (!idx) return gMeme.image.data;
     return gImgs[idx].url;
 }
 
@@ -237,6 +247,7 @@ function getImgs(...keywords) {
 
 function getStorageImgs() {
     const imgs = [];
+    if (!gMemeStorage || gMemeStorage.length === 0) return;
     gMemeStorage.forEach(meme => imgs.push(meme.preview));
     return imgs;
 }
@@ -307,6 +318,7 @@ function rotateCanvasItem(item, x, y) {
 
 function saveCanvas(dataurl) {
     if (!gMeme) return;
+    if (!gMemeStorage) gMemeStorage = [];
     gMeme.preview = dataurl;
     if (!gMeme.storage) {
         gMeme.storage = true;
@@ -324,7 +336,6 @@ function loadCanvas(idx) {
 
 function removeCanvas() {
     const idx = gMemeStorage.findIndex(item => item === gMeme);
-    console.log(idx);
     gMemeStorage.splice(idx, 1);
     saveMemeToStorage();
 }
