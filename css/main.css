@@ -301,7 +301,7 @@ body {
 
   .canvas-place {
     max-width: 100%;
-    min-height: 25vh;
+    height: 330px;
   }
 
   .grid-control {
