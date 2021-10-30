@@ -12,6 +12,7 @@ function initCanvas(img, isStorage = false) {
     createIcons();
     renderCanvasPanel();
     pageToggle('editor');
+    gActiveLayer = null;
     const elCanvasPlace = document.querySelector('.canvas-place');
     gElCanvas = document.querySelector('canvas');
     gElCanvas.width = elCanvasPlace.offsetWidth
@@ -338,7 +339,6 @@ function resizeCanvas(img = getImg()) {
 function renderCanvas(isExport = false) {
     const canvas = getMeme();
     if (isExport) gActiveLayer = null;
-    gCtx.save();
     if (canvas.image.data) gCtx.drawImage(canvas.image.data, 0, 0, gElCanvas.width, gElCanvas.height);
     gCtx.restore();
     canvas.items.forEach(item => {
@@ -377,6 +377,7 @@ function drawText(item) {
 }
 
 function markActiveLayer(item) {
+    gCtx.save();
     gCtx.beginPath();
     switch (item.type) {
         case 'text':
@@ -390,6 +391,7 @@ function markActiveLayer(item) {
     gCtx.lineWidth = 3;
     gCtx.strokeStyle = 'red';
     gCtx.stroke();
+    gCtx.restore();
 }
 
 function drawSticker(item) {
