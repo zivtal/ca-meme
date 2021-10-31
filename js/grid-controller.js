@@ -5,13 +5,6 @@ var gKeywordsMap;
 var gKeySelected;
 
 function initGrid(mode) {
-    const elGrid = document.querySelector('.grid-container');
-    const storageImgs = getStorageImgs();
-    if (!storageImgs || storageImgs.length === 0) {
-        toggleHideElement('.storage-button', true);
-    } else {
-        toggleHideElement('.storage-button', false);
-    }
     switch (mode) {
         case 'storage':
             toggleHideElement('.grid-control', true);
@@ -64,23 +57,22 @@ function renderGalleryGrid(keyword) {
 
 function renderStorageGrid() {
     let imgs = getStorageImgs();
-    if (!imgs || !imgs.length) {
-        pageToggle('gallery');
-        return;
-    }
     // Set header
     const elTitle = document.querySelector('.grid-container h1');
-    elTitle.innerText = 'Storage';
-    // Set grid template mode
     const elGrid = document.querySelector('.grid-content');
+    elGrid.innerHTML = '';
+    if (!imgs || !imgs.length) {
+        elTitle.innerText = 'Storage is empty';
+        return;
+    }
+    elTitle.innerText = 'Storage';
     if (imgs.length < 4) { elGrid.style = 'grid-template-columns: repeat(auto-fill, minmax(1px, 1fr));'; } else { elGrid.style = ''; }
     // Generate images
-    elGrid.innerHTML = '';
-    imgs.forEach(function (img, idx) { loadImg(img, createThumbSize, idx, true) });
+    imgs.forEach((img, idx) => { loadImg(img, createThumbSize, idx, true) });
 }
 
 function onImgClick(el, isStorage = false) {
-    newCanvas(el.dataset['image'], isStorage);
+    setNewCanvas(el.dataset['image'], isStorage);
 }
 
 function onKeywordClick(el) {

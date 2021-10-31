@@ -27,14 +27,13 @@ body {
 
 .main-content {
   margin: 0 auto;
-  max-width: 980px;
+  max-width: 1280px;
 }
 
 /* Buttons */
 
 .main-btn {
   display: inline-flex;
-  font-family: cursive, Arial, Helvetica, sans-serif;
   align-items: center;
   color: black;
   text-decoration: none;
@@ -65,7 +64,7 @@ body {
 
 .grid-control {
   user-select: none;
-  /* min-height: 100px; */
+  min-height: 120px;
   overflow: hidden;
   transition: 0.5s;
 }
@@ -128,7 +127,6 @@ body {
 }
 
 .grid-content img:hover {
-  opacity: 1;
   transform: scale(105%);
 }
 
@@ -172,7 +170,7 @@ body {
   border: 2px solid silver;
   border-radius: 10px;
   font-family: Impact, Arial, Helvetica, sans-serif;
-  font-size: 32px;
+  font-size: 1.3rem;
   margin: 10px;
 }
 
@@ -266,17 +264,9 @@ body {
 
 /* canvas */
 
-.canvas-place {
-  flex-grow: 1;
-}
-
-.meme-canvas {
-  position: relative;
-}
-
 @media screen and (max-width: 900px) {
   .control-panel .textinput {
-    font-size: 24px;
+    font-size: 1rem;
   }
 }
 
@@ -295,13 +285,16 @@ body {
     width: 45px;
   }
 
+  .control-panel .textinput {
+    font-size: 1.2rem;
+  }
+
   .meme-board .canvas {
     flex-direction: column;
   }
 
   .canvas-place {
     max-width: 100%;
-    height: 330px;
   }
 
   .grid-control {
@@ -321,12 +314,12 @@ body {
 
   .canvas-place {
     padding-top: 15px;
-    max-width: 50%;
+    width: 60%;
     min-height: 80vh;
   }
 
   .control-panel {
-    max-width: 50%;
+    width: 40%;
     margin-inline-start: 10px;
     border-inline-start: 1px solid silver;
   }
@@ -341,23 +334,11 @@ body {
     width: 38px;
   }
 
-  .grid-control {
-    height: 100px;
-  }
-
   .grid-content {
     grid-auto-rows: 5px;
   }
 
-  .grid-content img {
-    opacity: 0.8;
-  }
-
   .grid-control .keywords {
     max-width: 50%;
-  }
-
-  .grid-control:hover {
-    height: 230px;
   }
 }

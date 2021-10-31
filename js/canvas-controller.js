@@ -8,8 +8,8 @@ var gTrkMode;
 var gIcons;
 
 function initCanvas() {
-    createIcons();
-    renderCanvasPanel();
+    _createIcons();
+    _renderCanvasPanel();
     gElCanvas = document.querySelector('canvas');
     const elCanvasPlace = document.querySelector('.canvas-place');
     gElCanvas.width = elCanvasPlace.offsetWidth
@@ -17,7 +17,22 @@ function initCanvas() {
     gCtx = gElCanvas.getContext("2d");
 }
 
-function newCanvas(img, isStorage = false) {
+function _createIcons() {
+    gIcons = {};
+    const saveIcon = (img, title) => gIcons[title] = img;
+    loadImg('./img/icons/rotate.png', saveIcon, 'rotate');
+    loadImg('./img/icons/scale.png', saveIcon, 'scale');
+}
+
+function _renderCanvasPanel() {
+    const stickers = getStickers();
+    let strHtml = '';
+    stickers.forEach((sticker, idx) => strHtml += `<img data-index="${idx}" onclick="onClickSticker(this)" src="${sticker}">`)
+    const elStickers = document.querySelector('.control-panel .stickers');
+    elStickers.innerHTML = strHtml;
+}
+
+function setNewCanvas(img, isStorage = false) {
     clearCanvas();
     clearActiveLayer();
     pageToggle('editor');
@@ -37,21 +52,6 @@ function newCanvas(img, isStorage = false) {
     }
 }
 
-function createIcons() {
-    gIcons = {};
-    const saveIcon = (img, title) => gIcons[title] = img;
-    loadImg('./img/icons/rotate.png', saveIcon, 'rotate');
-    loadImg('./img/icons/scale.png', saveIcon, 'scale');
-}
-
-function renderCanvasPanel() {
-    const stickers = getStickers();
-    let strHtml = '';
-    stickers.forEach((sticker, idx) => strHtml += `<img data-index="${idx}" onclick="onClickSticker(this)" src="${sticker}">`)
-    const elStickers = document.querySelector('.control-panel .stickers');
-    elStickers.innerHTML = strHtml;
-}
-
 function onChangeText(el) {
     if (gActiveLayer && gActiveLayer.type === 'text') {
         gActiveLayer.text = el.value;
@@ -69,27 +69,14 @@ function onAlignClick(align) {
 function onFontSizeClick(size) {
     if (gActiveLayer && gActiveLayer.type === 'text') {
         gActiveLayer.font.size += size;
+        gActiveLayer.offset.y += size / 2;
         renderCanvas();
     }
 }
 
-function onChangeColor(el) {
+function onChangeFontStyle(el, key) {
     if (gActiveLayer && gActiveLayer.type === 'text') {
-        gActiveLayer.font.color = el.value;
-        renderCanvas();
-    }
-}
-
-function onChangeStroke(el) {
-    if (gActiveLayer && gActiveLayer.type === 'text') {
-        gActiveLayer.font.stroke = el.value;
-        renderCanvas();
-    }
-}
-
-function onChangeFont(el) {
-    if (gActiveLayer && gActiveLayer.type === 'text') {
-        gActiveLayer.font.family = el.value;
+        gActiveLayer.font[key] = el.value;
         renderCanvas();
     }
 }
@@ -125,11 +112,15 @@ function onRemoveClick() {
 }
 
 function onAddClick() {
-    gActiveLayer = addNewLine(gElCanvas.height, 'new line');
+    gActiveLayer = getCanvasNewText(gElCanvas.height, '');
     getActiveLayer(gActiveLayer);
+    const elInput = document.querySelector('.control-panel .textinput');
+    elInput.placeholder = '';
+    elInput.focus();
 }
 
 function onClickSticker(el) {
+    clearActiveLayer();
     const idx = el.dataset['index'];
     const url = getSticker(idx);
     const draw = function (img, ...arg) {
@@ -138,7 +129,7 @@ function onClickSticker(el) {
         const width = (img.width > img.height) ? size : size * (img.width / img.height);
         const x = gElCanvas.width / 2 - width / 2;
         const y = gElCanvas.height / 2 - height / 2;
-        const sticker = addCanvasImage(img, url, x, y, width, height);
+        const sticker = getCanvasNewImage(img, url, x, y, width, height);
         drawSticker(sticker);
     };
     loadImg(url, draw, 100);
@@ -146,37 +137,31 @@ function onClickSticker(el) {
 }
 
 function onClearCanvas() {
-    initCanvasModel();
-    gCtx.clearRect(0, 0, gElCanvas.width, gElCanvas.height);
+    const meme = getMeme();
+    meme.items = [];
+    renderCanvas();
 }
 
 function onUploadClick(ev) {
-    loadImgFromFile(ev, newCanvas);
+    loadImgFromFile(ev, setNewCanvas);
 }
 
 function onDownloadClick(el) {
-    clearActiveLayer();
-    const imgContent = gElCanvas.toDataURL('image/jpeg');
-    el.href = imgContent;
+    el.href = exportCanvas();
 }
 
 function onSaveCanvas() {
-    renderCanvas(true);
-    const imgContent = gElCanvas.toDataURL('image/jpeg');
-    saveCanvas(imgContent);
+    clearActiveLayer();
+    renderCanvas();
+    const preview = gElCanvas.toDataURL('image/jpeg');
+    saveCanvas(preview);
     pageToggle('storage');
 }
 
 function onRemoveCanvas() {
     removeCanvas();
     onClearCanvas();
-    const imgs = getStorageImgs();
-    if (!imgs || imgs.length === 0) {
-        toggleHideElement('.storage-button', true);
-        pageToggle('storage');
-    } else {
-        pageToggle('gallery');
-    }
+    pageToggle('storage');
 }
 
 function onLoadComplete(img, url) {
@@ -198,15 +183,23 @@ function loadImgFromFile(ev, onImageReady) {
 
 function clearActiveLayer() {
     gActiveLayer = null;
-    toggleDisableInput('.control-panel .textinput', true);
-    toggleDisableInput('.control-panel .colorpicker.stroke', true);
-    toggleDisableInput('.control-panel .colorpicker.font', true);
-    toggleDisableInput('.control-panel .set-opacity', true, 100);
-    toggleDisableInput('.control-panel .fontfamily', true, 'Impact');
+    setInputToggle();
     renderCanvas();
 }
 
+function setInputToggle() {
+    const type = (gActiveLayer) ? gActiveLayer.type : null;
+    const isText = (type === 'text');
+    const isImage = (type === 'image');
+    toggleDisableInput('.control-panel .textinput', (!isText), (isText) ? gActiveLayer.text : null, (!isText) ? 'Click button (+) to add new line' : null);
+    toggleDisableInput('.control-panel .colorpicker.stroke', (!isText), (isText) ? gActiveLayer.font.stroke : null);
+    toggleDisableInput('.control-panel .colorpicker.font', (!isText), (isText) ? gActiveLayer.font.color : null);
+    toggleDisableInput('.control-panel .fontfamily', (!isText), (isText) ? gActiveLayer.font.family : 'Impact');
+    toggleDisableInput('.control-panel .set-opacity', (!isText && !isImage), (isText || isImage) ? gActiveLayer.opacity : 100);
+}
+
 function getActiveLayer(layer) {
+    const prevActive = gActiveLayer;
     if (layer) {
         gActiveLayer = layer;
     } else if (gTracking.offset.start) {
@@ -214,35 +207,22 @@ function getActiveLayer(layer) {
     }
     if (gActiveLayer) {
         toggleDisableInput('.control-panel .set-opacity', false, gActiveLayer.opacity);
-        switch (gActiveLayer.type) {
-            case 'text':
-                toggleDisableInput('.control-panel .textinput', false, gActiveLayer.text);
-                toggleDisableInput('.control-panel .colorpicker.stroke', false, gActiveLayer.font.stroke);
-                toggleDisableInput('.control-panel .colorpicker.font', false, gActiveLayer.font.color);
-                toggleDisableInput('.control-panel .fontfamily', false, gActiveLayer.font.family);
-                break;
-            case 'image':
-                toggleDisableInput('.control-panel .textinput', true);
-                toggleDisableInput('.control-panel .colorpicker.stroke', true);
-                toggleDisableInput('.control-panel .colorpicker.font', true);
-                toggleDisableInput('.control-panel .fontfamily', true);
-                gTracking.shift = {
-                    x: gActiveLayer.width / 2,
-                    y: gActiveLayer.height / 2,
-                }
-                const isTouch = gTracking.isTouch();
-                let clickOffsetX = (isTouch) ? gActiveLayer.right * 0.9 : gActiveLayer.right * 0.95;
-                let clickOffsetY = (isTouch) ? gActiveLayer.bottom * 0.85 : gActiveLayer.bottom * 0.90;
-                if ((gTracking.offset.start.x > clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'scale';
-                clickOffsetX = (isTouch) ? gActiveLayer.left * 1.2 : gActiveLayer.left * 1.25;
-                if ((gTracking.offset.start.x < clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'rotate';
-                break;
+        if (gActiveLayer.type === 'image') {
+            gTracking.shift = {
+                x: gActiveLayer.width / 2,
+                y: gActiveLayer.height / 2,
+            }
+            const isTouch = gTracking.isTouch();
+            let clickOffsetY = (isTouch) ? gActiveLayer.bottom * 0.85 : gActiveLayer.bottom * 0.95;
+            let clickOffsetX = (isTouch) ? gActiveLayer.right * 0.85 : gActiveLayer.right * 0.95;
+            if ((gTracking.offset.start.x > clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'scale';
+            clickOffsetX = (isTouch) ? gActiveLayer.left * 1.2 : gActiveLayer.left * 1.1;
+            if ((gTracking.offset.start.x < clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'rotate';
+            console.log(gTrkMode, gTracking.offset.start.x, gTracking.offset.start.y);
         }
-    } else {
-        toggleDisableInput('.control-panel .textinput', true);
-        toggleDisableInput('.control-panel .colorpicker.stroke', true);
-        toggleDisableInput('.control-panel .colorpicker.font', true);
     }
+    if (prevActive && prevActive !== gActiveLayer && prevActive.type === 'text' && !prevActive.text) removeCanvasItem(prevActive);
+    setInputToggle();
     renderCanvas();
 }
 
@@ -261,10 +241,10 @@ function moveTracking(ev) {
         // console.log(gTrkMode);
         switch (gTrkMode) {
             case 'scale':
-                resizeCanvasItem(gActiveLayer, change.x, change.y);
+                resizeCanvasItem(gActiveLayer, (change.x + change.y) / 100);
                 break;
             case 'rotate':
-                rotateCanvasItem(gActiveLayer, change.x, change.y);
+                rotateCanvasItem(gActiveLayer, change.x / 1000);
                 break;
             default:
                 document.body.style.cursor = 'grab';
@@ -282,8 +262,18 @@ function endTracking() {
 }
 
 function keyDown(ev) {
+    if (!gActiveLayer || document.activeElement.nodeName === 'INPUT') return;
     ev.stopPropagation();
     if (ev.key.substr(0, 5) === 'Arrow') onChangePosition(ev.key.substr(5, 5));
+    switch (gActiveLayer.type) {
+        case 'text':
+            if (ev.key === '+' || ev.key === '-') onFontSizeClick((ev.key === '+') ? 2 : -2);
+            break;
+        case 'image':
+            if (ev.key === '+' || ev.key === '-') resizeCanvasItem(gActiveLayer, (ev.key === '+') ? 1 : -1);
+            renderCanvas();
+            break;
+    }
 }
 
 function onChangePosition(direction) {
@@ -342,46 +332,21 @@ function resizeCanvas(img = getCanvasBackground()) {
     setCanvasSize(gElCanvas.width, gElCanvas.height);
 }
 
-function renderCanvas(isExport = false) {
+function renderCanvas() {
     const meme = getMeme();
-    if (meme.image.data) gCtx.drawImage(meme.image.data, 0, 0, gElCanvas.width, gElCanvas.height);
+    if (meme.image.data) gCtx.drawImage(meme.image.data, 0, 0, meme.width, meme.height);
     gCtx.restore();
     meme.items.forEach(item => {
         switch (item.type) {
             case 'text':
-                drawText(item)
+                drawText(item, gCtx);
                 break;
             case 'image':
-                drawSticker(item);
+                drawSticker(item, gCtx);
                 break;
         }
     });
-    if (!isExport) {
-        if (gActiveLayer) {
-            switch (gActiveLayer.type) {
-                case 'text':
-                    markActiveLayer(gActiveLayer);
-                    break;
-                case 'image':
-                    markActiveLayer(gActiveLayer);
-                    break;
-            }
-        }
-    }
-}
-
-function drawText(item) {
-    gCtx.save();
-    gCtx.font = item.font.size + 'px ' + item.font.family;
-    gCtx.lineWidth = 3;
-    gCtx.strokeStyle = item.font.stroke;
-    gCtx.fillStyle = item.font.color;
-    gCtx.globalAlpha = item.opacity / 100;
-    gCtx.textAlign = 'center';
-    gCtx.fillText(item.text, (item.offset.x) ? item.offset.x : gElCanvas.width / 2, item.offset.y);
-    gCtx.strokeText(item.text, (item.offset.x) ? item.offset.x : gElCanvas.width / 2, item.offset.y);
-    setCanvasLineSize(item, gCtx.measureText(item.text).width);
-    gCtx.restore();
+    if (gActiveLayer) markActiveLayer(gActiveLayer);
 }
 
 function markActiveLayer(item) {
@@ -395,8 +360,6 @@ function markActiveLayer(item) {
             gCtx.rect(item.left, item.top, item.width, item.height);
             break;
         case 'image':
-            gCtx.strokeStyle = 'red';
-            gCtx.rect(item.left - 10, item.top - 10, item.width + 20, item.height + 20);
             gCtx.drawImage(gIcons.rotate, item.left, item.bottom - 15, 20, 20);
             gCtx.drawImage(gIcons.scale, item.right - 20, item.bottom - 15, 20, 20);
             break;
@@ -405,16 +368,3 @@ function markActiveLayer(item) {
     gCtx.restore();
 }
 
-function drawSticker(item) {
-    gCtx.save();
-    gCtx.globalAlpha = item.opacity / 100;
-    if (item.degrees) {
-        gCtx.translate(item.offset.x + item.width / 2, item.offset.y + item.height / 2);
-        gCtx.rotate(item.degrees);
-        gCtx.drawImage(item.image.data, -item.width / 2, -item.height / 2, item.width, item.height);
-    } else {
-        gCtx.drawImage(item.image.data, item.offset.x, item.offset.y, item.width, item.height);
-    }
-    gCtx.restore();
-    setCanvasImage(item);
-}
