@@ -322,12 +322,14 @@ function resizeCanvas(img = getCanvasBackground()) {
     const elCanvasPlace = document.querySelector('.canvas-place');
     const height = elCanvasPlace.offsetHeight;
     const width = elCanvasPlace.offsetWidth;
-    if ((!height) || (!width) || (!img)) return;
     const ratio = img.width / img.height;
-    const size = (height > width) ? width * 0.9 : height * 0.9;
-    gElCanvas.width = (height > width) ? size : size * ratio;
-    gElCanvas.height = (height > width) ? size / ratio : size;
-    gElCanvas.style.marginInlineStart = ((width - gElCanvas.width) / 2) + 'px';
+    if (height > width) {
+        gElCanvas.width = width;
+        gElCanvas.height = width / ratio;
+    } else {
+        gElCanvas.height = height;
+        gElCanvas.width = height * ratio;
+    }
     setCanvasSize(gElCanvas.width, gElCanvas.height);
 }
 

@@ -27,7 +27,7 @@ body {
 
 .main-content {
   margin: 0 auto;
-  max-width: 1280px;
+  max-width: 980px;
 }
 
 /* Buttons */
@@ -263,12 +263,6 @@ body {
 }
 
 /* canvas */
-
-@media screen and (max-width: 900px) {
-  .control-panel .textinput {
-    font-size: 1rem;
-  }
-}
 
 @media screen and (max-width: 720px) {
   .main-btn {
