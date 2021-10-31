@@ -319,17 +319,13 @@ function setEvents(el, isMouse = true, isTouch = true, isKeyboard = true) {
 }
 
 function resizeCanvas(img = getCanvasBackground()) {
-    console.log(gElCanvas.parentElement.offsetWidth, window.innerWidth);
     const height = gElCanvas.parentElement.offsetHeight;
     const width = Math.min(gElCanvas.parentElement.offsetWidth, window.innerWidth);
     const ratio = img.width / img.height;
-    if (height > width) {
-        gElCanvas.width = width;
-        gElCanvas.height = width / ratio;
-    } else {
-        gElCanvas.height = height;
-        gElCanvas.width = height * ratio;
-    }
+    gElCanvas.width = (height > width) ? width : height * ratio;
+    gElCanvas.height = (height > width) ? width / ratio : height;
+    // if (gElCanvas.width > window.innerWidth) gElCanvas.style.width = width - 10 + 'px';
+    gElCanvas.style.marginInlineStart = Math.max((width - gElCanvas.width) / 2, 0) + 'px';
     setCanvasSize(gElCanvas.width, gElCanvas.height);
 }
 
