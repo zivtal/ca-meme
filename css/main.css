@@ -289,7 +289,7 @@ body {
 
   .canvas-place {
     max-width: 100%;
-    min-height: 320px;
+    height: 320px;
   }
 
   .grid-control {
