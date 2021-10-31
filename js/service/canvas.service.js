@@ -294,7 +294,7 @@ function getSticker(idx) {
 }
 
 function getActiveItem(x, y) {
-    const item = gMeme.items.find(item => {
+    const item = gMeme.items.slice().reverse().find(item => {
         return (
             x >= item.left && x <= item.right &&
             y >= item.top && y <= item.bottom
