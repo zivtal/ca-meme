@@ -182,6 +182,7 @@ function loadImgFromFile(ev, onImageReady) {
 }
 
 function clearActiveLayer() {
+    if (gActiveLayer && gActiveLayer.type === 'text' && !gActiveLayer.text) removeCanvasItem(gActiveLayer);
     gActiveLayer = null;
     setInputToggle();
     renderCanvas();
@@ -259,6 +260,7 @@ function endTracking() {
 }
 
 function keyDown(ev) {
+    if (ev.key === 'Escape') clearActiveLayer();
     if (!gActiveLayer || document.activeElement.nodeName === 'INPUT') return;
     ev.stopPropagation();
     if (ev.key.substr(0, 5) === 'Arrow') onChangePosition(ev.key.substr(5, 5));
@@ -322,7 +324,7 @@ function resizeCanvas(img = getCanvasBackground()) {
     const width = elCanvasPlace.offsetWidth;
     if ((!height) || (!width) || (!img)) return;
     const ratio = img.width / img.height;
-    const size = (height > width) ? width : height;
+    const size = (height > width) ? width * 0.9 : height * 0.9;
     gElCanvas.width = (height > width) ? size : size * ratio;
     gElCanvas.height = (height > width) ? size / ratio : size;
     gElCanvas.style.marginInlineStart = ((width - gElCanvas.width) / 2) + 'px';

@@ -29,7 +29,8 @@
         <div class="grid-control flex">
             <div class="search">
                 <div>Search</div>
-                <input class="searchinput" type="text" oninput="onKeywordSearch(this)">
+                <input class="searchinput" list="keywordsdb" type="text" oninput="onKeywordSearch(this)">
+                <datalist id="keywordsdb"></datalist>
                 <button class="main-btn" onclick="onClickClear()">Clear</button>
                 </div>
             <div class="keywords"></div>
@@ -50,7 +51,7 @@
         <div class="canvas flex">
             <div class="canvas-place"><canvas class="meme-canvas" height="400" width="400"></canvas></div>
             <div class="control-panel flex">
-                    <input class="textinput" type="text" name="meme" oninput="onChangeText(this)" disabled>
+                    <input class="textinput" type="text" name="meme" oninput="onChangeText(this)" autocomplete="off" disabled>
                     <div class="flex ctrlflex">
                         <div class="line ctrlflex">
                             <img class="ctrlbtn" src="./img/icons/up-and-down-opposite-double-arrows-side-by-side.png" onclick="onSwitchClick()">
@@ -94,6 +95,7 @@
     <div class="storage main-content flex"></div>
     <script src="js/service/storage.service.js"></script>
     <script src="js/service/tracking.service.js"></script>
+    <script src="js/service/grid.service.js"></script>
     <script src="js/service/canvas.service.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/navbar-controller.js"></script>
