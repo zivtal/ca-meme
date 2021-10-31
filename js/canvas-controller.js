@@ -218,7 +218,6 @@ function getActiveLayer(layer) {
             if ((gTracking.offset.start.x > clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'scale';
             clickOffsetX = (isTouch) ? gActiveLayer.left * 1.2 : gActiveLayer.left * 1.1;
             if ((gTracking.offset.start.x < clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'rotate';
-            console.log(gTrkMode, gTracking.offset.start.x, gTracking.offset.start.y);
         }
     }
     if (prevActive && prevActive !== gActiveLayer && prevActive.type === 'text' && !prevActive.text) removeCanvasItem(prevActive);
@@ -236,9 +235,7 @@ function startTracking(ev) {
 function moveTracking(ev) {
     gTracking.move(ev);
     if (gTracking.isActive && gActiveLayer) {
-        // alert(JSON.stringify(gTracking.change()));
         const change = gTracking.change();
-        // console.log(gTrkMode);
         switch (gTrkMode) {
             case 'scale':
                 resizeCanvasItem(gActiveLayer, (change.x + change.y) / 100);
@@ -328,7 +325,7 @@ function resizeCanvas(img = getCanvasBackground()) {
     const size = (height > width) ? width : height;
     gElCanvas.width = (height > width) ? size : size * ratio;
     gElCanvas.height = (height > width) ? size / ratio : size;
-    gElCanvas.style.left = ((width - gElCanvas.width) / 2) + 'px';
+    gElCanvas.style.marginInlineStart = ((width - gElCanvas.width) / 2) + 'px';
     setCanvasSize(gElCanvas.width, gElCanvas.height);
 }
 
