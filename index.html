@@ -51,11 +51,13 @@
         <div class="canvas flex">
             <div class="canvas-place"><canvas class="meme-canvas" height="400" width="400"></canvas></div>
             <div class="control-panel flex">
-                    <input class="textinput" type="text" name="meme" oninput="onChangeText(this)" autocomplete="off" disabled>
+                    <div>
+                        <input class="textinput" type="text" name="meme" oninput="onChangeText(this)" autocomplete="off" disabled>
+                        <img class="ctrlbtn" src="./img/icons/add.png" onclick="onAddClick()">
+                    </div>
                     <div class="flex ctrlflex">
                         <div class="line ctrlflex">
                             <img class="ctrlbtn" src="./img/icons/up-and-down-opposite-double-arrows-side-by-side.png" onclick="onSwitchClick()">
-                            <img class="ctrlbtn" src="./img/icons/add.png" onclick="onAddClick()">
                             <img class="ctrlbtn" src="./img/icons/remove.png" onclick="onRemoveClick()">
                             <img class="ctrlbtn" src="./img/icons/font-increase.png" onclick="onFontSizeClick(2)">
                             <img class="ctrlbtn" src="./img/icons/font-decrease.png" onclick="onFontSizeClick(-2)">

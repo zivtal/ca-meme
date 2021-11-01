@@ -166,12 +166,14 @@ body {
 }
 
 .control-panel .textinput {
+  float: left;
   text-align: center;
   border: 2px solid silver;
   border-radius: 10px;
   font-family: Impact, Arial, Helvetica, sans-serif;
   font-size: 1.3rem;
-  margin: 10px;
+  margin: 5px;
+  width: calc(100% - 100px);
 }
 
 .control-panel .colorpicker {
@@ -183,7 +185,7 @@ body {
 }
 
 .control-panel .fontfamily,
-.control-panel .ctrlbtn {
+.ctrlbtn {
   touch-action: none;
   cursor: pointer;
   margin: 5px;
@@ -257,7 +259,7 @@ body {
 }
 
 .control-panel .colorpicker:hover ~ img,
-.control-panel .ctrlbtn:hover {
+.ctrlbtn:hover {
   transform: scale(115%);
   border: 3px solid black;
 }
@@ -270,13 +272,18 @@ body {
   }
 
   .control-panel .fontfamily,
-  .control-panel .line > img,
-  .control-panel .line span > img {
+  .control-panel .textinput,
+  .control-panel .ctrlbtn,
+  .control-panel span > .ctrlbtn {
     height: 45px;
   }
-  .control-panel .line > img,
-  .control-panel .line span > img {
+  .control-panel .ctrlbtn,
+  .control-panel span > .ctrlbtn {
     width: 45px;
+  }
+
+  .control-panel .textinput {
+    width: calc(100% - 80px);
   }
 
   .control-panel .textinput {
@@ -318,13 +325,18 @@ body {
   }
 
   .control-panel .fontfamily,
-  .control-panel .line > img,
-  .control-panel .line span > img {
+  .control-panel .textinput,
+  .control-panel .ctrlbtn,
+  .control-panel span > .ctrlbtn {
     height: 38px;
   }
-  .control-panel .line > img,
-  .control-panel .line span > img {
+  .control-panel .ctrlbtn,
+  .control-panel span > .ctrlbtn {
     width: 38px;
+  }
+
+  .control-panel .textinput {
+    width: calc(100% - 70px);
   }
 
   .grid-content {

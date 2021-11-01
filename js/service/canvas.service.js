@@ -400,7 +400,8 @@ function exportCanvas(meme = getMeme(), ratio = 5) {
 
 function drawText(item, context = gCtx) {
     context.save();
-    context.font = item.font.size + 'px ' + item.font.family;
+    context.font = `bold ${item.font.size}px ${item.font.family}`;
+    // context.font = 'bold ' + item.font.size + 'px ' + item.font.family;
     context.lineWidth = 3;
     context.strokeStyle = item.font.stroke;
     context.fillStyle = item.font.color;

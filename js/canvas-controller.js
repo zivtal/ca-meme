@@ -215,7 +215,7 @@ function getActiveLayer(layer) {
             }
             const isTouch = gTracking.isTouch();
             let clickOffsetY = (isTouch) ? gActiveLayer.bottom * 0.85 : gActiveLayer.bottom * 0.95;
-            let clickOffsetX = (isTouch) ? gActiveLayer.right * 0.85 : gActiveLayer.right * 0.95;
+            let clickOffsetX = (isTouch) ? gActiveLayer.right * 0.80 : gActiveLayer.right * 0.90;
             if ((gTracking.offset.start.x > clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'scale';
             clickOffsetX = (isTouch) ? gActiveLayer.left * 1.2 : gActiveLayer.left * 1.1;
             if ((gTracking.offset.start.x < clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'rotate';
