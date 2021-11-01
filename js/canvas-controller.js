@@ -330,7 +330,7 @@ function resizeCanvas(img = getCanvasBackground()) {
     //     gElCanvas.height = height;
     // }
     // gElCanvas.parentElement.style.height = gElCanvas.height + 'px';
-    gElCanvas.style.marginInlineStart = Math.max((width - gElCanvas.width) / 2, 0) + 'px';
+    gElCanvas.style.marginInlineStart = Math.max((gElCanvas.parentElement.offsetWidth - gElCanvas.width) / 2, 0) + 'px';
     setCanvasSize(gElCanvas.width, gElCanvas.height);
 }
 
