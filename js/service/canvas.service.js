@@ -361,7 +361,8 @@ function removeCanvas() {
     _saveMemeToStorage();
 }
 
-function exportCanvas(meme = getMeme(), ratio = 5) {
+function exportCanvas(meme = getMeme(), ratio) {
+    if (!ratio) ratio = meme.image.data.width / meme.width;
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (ratio && meme.image.data) {
