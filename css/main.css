@@ -313,8 +313,8 @@ body {
 
   .control-panel {
     width: 40%;
+    max-width: 400px;
     margin-inline-start: 10px;
-    border-inline-start: 1px solid silver;
   }
 
   .control-panel .fontfamily,
