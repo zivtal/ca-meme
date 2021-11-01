@@ -403,7 +403,7 @@ function drawText(item, context = gCtx) {
     context.save();
     context.font = `bold ${item.font.size}px ${item.font.family}`;
     // context.font = 'bold ' + item.font.size + 'px ' + item.font.family;
-    context.lineWidth = 3;
+    context.lineWidth = item.font.size / 16;
     context.strokeStyle = item.font.stroke;
     context.fillStyle = item.font.color;
     context.globalAlpha = item.opacity / 100;
