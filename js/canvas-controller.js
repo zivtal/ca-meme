@@ -319,8 +319,8 @@ function setEvents(el, isMouse = true, isTouch = true, isKeyboard = true) {
 }
 
 function resizeCanvas(img = getCanvasBackground()) {
-    const height = Math.min(gElCanvas.parentElement.offsetHeight, img.height);
-    const width = Math.min(gElCanvas.parentElement.offsetWidth, img.width);
+    const height = Math.min(gElCanvas.parentElement.offsetHeight, img.height) * 0.95;
+    const width = Math.min(gElCanvas.parentElement.offsetWidth, img.width) * 0.95;
     const ratio = img.width / img.height;
     // if (height * ratio > width / ratio) {
     gElCanvas.width = width;
