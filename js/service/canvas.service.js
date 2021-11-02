@@ -222,24 +222,27 @@ function clearCanvas() {
     gMeme = _createMeme();
 }
 
-function setCanvasSize(width, height) {
-    const ratio = (gMeme.width) ? width / gMeme.width : 1;
-    gMeme.width = width;
-    gMeme.height = height;
-    gMeme.items.forEach(item => {
-        switch (item.type) {
-            case 'text':
-                item.font.size *= ratio;
-                item.offset.x += (item.offset.x * ratio - item.offset.x);
-                item.offset.y *= ratio;
-                break;
-            case 'image':
-                item.width *= ratio;
-                item.height *= ratio;
-                item.offset.x *= ratio;
-                item.offset.y *= ratio;
-                break;
-        }
+function setCanvasSize(width, height, memes = [gMeme]) {
+    if (!width || !height) return;
+    memes.forEach(meme => {
+        const ratio = (meme.width) ? width / meme.width : 1;
+        meme.width = width;
+        meme.height = height;
+        meme.items.forEach(item => {
+            switch (item.type) {
+                case 'text':
+                    item.font.size *= ratio;
+                    item.offset.x += (item.offset.x * ratio - item.offset.x);
+                    item.offset.y *= ratio;
+                    break;
+                case 'image':
+                    item.width *= ratio;
+                    item.height *= ratio;
+                    item.offset.x *= ratio;
+                    item.offset.y *= ratio;
+                    break;
+            }
+        });
     });
 }
 
@@ -351,6 +354,7 @@ function saveCanvas(dataurl) {
 }
 
 function loadCanvas(idx) {
+    if (gMemeStorage[idx] !== gMeme) setCanvasSize(gMemeStorage[idx]);
     gMeme = gMemeStorage[idx];
     return gMeme;
 }

@@ -12,16 +12,16 @@ function pageToggle(page) {
             case 'gallery':
             case 'storage':
                 initGrid(page);
-                toggleHideElement('.meme-board', true);
+                toggleHideElement('.canvas-container', true);
                 toggleHideElement('.grid-container', false);
                 break;
             case 'editor':
-                toggleHideElement('.meme-board', false);
+                toggleHideElement('.canvas-container', false);
                 toggleHideElement('.grid-container', true);
                 break;
         }
     } else {
-        toggleHideElement('.meme-board');
+        toggleHideElement('.canvas-container');
         toggleHideElement('.grid-container');
     }
 }

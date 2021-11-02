@@ -28,7 +28,7 @@ function _renderCanvasPanel() {
     const stickers = getStickers();
     let strHtml = '';
     stickers.forEach((sticker, idx) => strHtml += `<img data-index="${idx}" onclick="onClickSticker(this)" src="${sticker}">`)
-    const elStickers = document.querySelector('.control-panel .stickers');
+    const elStickers = document.querySelector('.canvas-control .stickers');
     elStickers.innerHTML = strHtml;
 }
 
@@ -114,7 +114,7 @@ function onRemoveClick() {
 function onAddClick() {
     gActiveLayer = getCanvasNewText(gElCanvas.height, '');
     getActiveLayer(gActiveLayer);
-    const elInput = document.querySelector('.control-panel .textinput');
+    const elInput = document.querySelector('.canvas-control .textinput');
     elInput.placeholder = '';
     elInput.focus();
 }
@@ -192,11 +192,11 @@ function setInputToggle() {
     const type = (gActiveLayer) ? gActiveLayer.type : null;
     const isText = (type === 'text');
     const isImage = (type === 'image');
-    toggleDisableInput('.control-panel .textinput', (!isText), (isText) ? gActiveLayer.text : null, (!isText) ? 'Click button (+) to add new line' : null);
-    toggleDisableInput('.control-panel .colorpicker.stroke', (!isText), (isText) ? gActiveLayer.font.stroke : null);
-    toggleDisableInput('.control-panel .colorpicker.font', (!isText), (isText) ? gActiveLayer.font.color : null);
-    toggleDisableInput('.control-panel .fontfamily', (!isText), (isText) ? gActiveLayer.font.family : 'Impact');
-    toggleDisableInput('.control-panel .set-opacity', (!isText && !isImage), (isText || isImage) ? gActiveLayer.opacity : 100);
+    toggleDisableInput('.canvas-control .textinput', (!isText), (isText) ? gActiveLayer.text : null, (!isText) ? 'Click button (+) to add new line' : null);
+    toggleDisableInput('.canvas-control .colorpicker.stroke', (!isText), (isText) ? gActiveLayer.font.stroke : null);
+    toggleDisableInput('.canvas-control .colorpicker.font', (!isText), (isText) ? gActiveLayer.font.color : null);
+    toggleDisableInput('.canvas-control .fontfamily', (!isText), (isText) ? gActiveLayer.font.family : 'Impact');
+    toggleDisableInput('.canvas-control .set-opacity', (!isText && !isImage), (isText || isImage) ? gActiveLayer.opacity : 100);
 }
 
 function getActiveLayer(layer) {
@@ -207,18 +207,20 @@ function getActiveLayer(layer) {
         gActiveLayer = getActiveItem(gTracking.offset.start.x, gTracking.offset.start.y);
     }
     if (gActiveLayer) {
-        toggleDisableInput('.control-panel .set-opacity', false, gActiveLayer.opacity);
+        toggleDisableInput('.canvas-control .set-opacity', false, gActiveLayer.opacity);
         if (gActiveLayer.type === 'image') {
             gTracking.shift = {
                 x: gActiveLayer.width / 2,
                 y: gActiveLayer.height / 2,
             }
-            const isTouch = gTracking.isTouch();
-            let clickOffsetY = (isTouch) ? gActiveLayer.bottom * 0.85 : gActiveLayer.bottom * 0.95;
-            let clickOffsetX = (isTouch) ? gActiveLayer.right * 0.80 : gActiveLayer.right * 0.90;
-            if ((gTracking.offset.start.x > clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'scale';
-            clickOffsetX = (isTouch) ? gActiveLayer.left * 1.2 : gActiveLayer.left * 1.1;
-            if ((gTracking.offset.start.x < clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'rotate';
+            if (gTracking.offset.start.x && gTracking.offset.start.y) {
+                const isTouch = gTracking.isTouch();
+                let clickOffsetY = (isTouch) ? gActiveLayer.bottom * 0.8 : gActiveLayer.bottom * 0.9;
+                let clickOffsetX = (isTouch) ? gActiveLayer.right * 0.8 : gActiveLayer.right * 0.92;
+                if ((gTracking.offset.start.x > clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'scale';
+                clickOffsetX = (isTouch) ? gActiveLayer.left * 1.2 : gActiveLayer.left * 1.1;
+                if ((gTracking.offset.start.x < clickOffsetX && gTracking.offset.start.y > clickOffsetY)) gTrkMode = 'rotate';
+            }
         }
     }
     if (prevActive && prevActive !== gActiveLayer && prevActive.type === 'text' && !prevActive.text) removeCanvasItem(prevActive);
@@ -322,14 +324,8 @@ function resizeCanvas(img = getCanvasBackground()) {
     const height = Math.min(gElCanvas.parentElement.offsetHeight, img.height) * 0.95;
     const width = Math.min(gElCanvas.parentElement.offsetWidth, img.width) * 0.95;
     const ratio = img.width / img.height;
-    // if (height * ratio > width / ratio) {
     gElCanvas.width = width;
     gElCanvas.height = width / ratio;
-    // } else {
-    //     gElCanvas.width = height * ratio;
-    //     gElCanvas.height = height;
-    // }
-    // gElCanvas.parentElement.style.height = gElCanvas.height + 'px';
     gElCanvas.style.marginInlineStart = Math.max((gElCanvas.parentElement.offsetWidth - gElCanvas.width) / 2, 0) + 'px';
     setCanvasSize(gElCanvas.width, gElCanvas.height);
 }

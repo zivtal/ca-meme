@@ -39,7 +39,7 @@
         <div class="grid-content"></div>
     </div>
     <!-- Canvas -->
-    <div class="meme-board main-content">
+    <div class="canvas-container main-content">
         <div class="maintoolbar flex align-center">
             <a class="main-btn flex align-center" href="#" onclick="onClearCanvas()">Clear</a>
             <input type="file" id="upload-photo" class="main-btn" onchange="onUploadClick(event)">
@@ -50,46 +50,47 @@
         </div>
         <div class="canvas flex">
             <div class="canvas-place"><canvas class="meme-canvas" height="400" width="400"></canvas></div>
-            <div class="control-panel flex">
-                    <div>
-                        <input class="textinput" type="text" name="meme" oninput="onChangeText(this)" autocomplete="off" disabled>
-                        <img class="ctrlbtn" src="./img/icons/add.png" onclick="onAddClick()">
-                    </div>
-                    <div class="flex ctrlflex">
-                        <div class="line ctrlflex">
-                            <img class="ctrlbtn" src="./img/icons/up-and-down-opposite-double-arrows-side-by-side.png" onclick="onSwitchClick()">
-                            <img class="ctrlbtn" src="./img/icons/remove.png" onclick="onRemoveClick()">
-                            <img class="ctrlbtn" src="./img/icons/font-increase.png" onclick="onFontSizeClick(2)">
-                            <img class="ctrlbtn" src="./img/icons/font-decrease.png" onclick="onFontSizeClick(-2)">
-                            <img class="ctrlbtn" src="./img/icons/align-to-left.png" onclick="onAlignClick('left')">
-                            <img class="ctrlbtn" src="./img/icons/align-to-center.png" onclick="onAlignClick('center')">
-                            <img class="ctrlbtn" src="./img/icons/align-to-right.png" onclick="onAlignClick('right')">
-                            <span>
-                                <input class="colorpicker stroke" type="color" value="#000000" oninput="onChangeFontStyle(this,'stroke')"></input>
-                                <img class="ctrlbtn" src="./img/icons/font-stroke.png">
-                            </span>
-                            <span>
-                                <input class="colorpicker font" type="color" value="#ffffff" oninput="onChangeFontStyle(this,'color')"></input>
-                                <img class="ctrlbtn" src="./img/icons/paint-board-and-brush.png">
-                            </span>
-                            <select class="fontfamily" onchange="onChangeFontStyle(this,'family')" disabled>
-                                <option>Impact</option>
-                                <option>Arial</option>
-                            </select> 
-                            <span>
-                                <input type="range" id="input-opacity" class="set-opacity" min="0" max="100" value="100" oninput="onChangeOpacity(this)" disabled>
-                                <label for="input-opacity">Opacity</label>
-                            </span>
-                        </div>
-                        <div class="move-control">
-                            <div class="up" onclick="onChangePosition('up')"><img src="img/icons/arrow-up.png"></div>
-                            <div class="left" onclick="onChangePosition('left')"><img src="img/icons/arrow-left.png"></div>
-                            <div class="right" onclick="onChangePosition('right')"><img src="img/icons/arrow-right.png"></div>
-                            <div class="down" onclick="onChangePosition('down')"><img src="img/icons/arrow-down.png"></div>
-                        </div>
-                    </div>
-                    <div class="stickers ctrlflex"></div>
+            <div class="canvas-control">
+                <input class="textinput" type="text" name="meme" oninput="onChangeText(this)" autocomplete="off" disabled>
+                <img class="ctrlbtn" src="./img/icons/add.png" onclick="onAddClick()">
+                <img class="ctrlbtn" src="./img/icons/font-increase.png" onclick="onFontSizeClick(2)">
+                <img class="ctrlbtn" src="./img/icons/font-decrease.png" onclick="onFontSizeClick(-2)">
+                <img class="ctrlbtn" src="./img/icons/align-to-left.png" onclick="onAlignClick('left')">
+                <img class="ctrlbtn" src="./img/icons/align-to-center.png" onclick="onAlignClick('center')">
+                <img class="ctrlbtn" src="./img/icons/align-to-right.png" onclick="onAlignClick('right')">
+                <span>
+                    <input class="colorpicker stroke" type="color" value="#000000" oninput="onChangeFontStyle(this,'stroke')"></input>
+                    <img class="ctrlbtn" src="./img/icons/font-stroke.png">
+                </span>
+                <span>
+                    <input class="colorpicker font" type="color" value="#ffffff" oninput="onChangeFontStyle(this,'color')"></input>
+                    <img class="ctrlbtn" src="./img/icons/paint-board-and-brush.png">
+                </span>
+                <select class="fontfamily" onchange="onChangeFontStyle(this,'family')" disabled>
+                    <option>Impact</option>
+                    <option>Arial</option>
+                </select> 
+                <span>
+                    <label for="input-fontsize">Font size</label>
+                    <input type="range" id="stroke-width" class="set-font-size" min="8" max="72" value="48" oninput="" disabled>
+                </span>
+                <div class="move-control">
+                    <div class="up" onclick="onChangePosition('up')"><img src="img/icons/arrow-up.png"></div>
+                    <div class="left" onclick="onChangePosition('left')"><img src="img/icons/arrow-left.png"></div>
+                    <div class="right" onclick="onChangePosition('right')"><img src="img/icons/arrow-right.png"></div>
+                    <div class="down" onclick="onChangePosition('down')"><img src="img/icons/arrow-down.png"></div>
                 </div>
+                <img class="ctrlbtn" src="./img/icons/switch.png" onclick="onSwitchClick()">
+                <img class="ctrlbtn" src="./img/icons/remove.png" onclick="onRemoveClick()">
+                <span>
+                    <label for="input-opacity">Opacity</label>
+                    <input type="range" id="input-opacity" class="set-opacity" min="0" max="100" value="100" oninput="onChangeOpacity(this)" disabled>
+                </span>
+                <!-- <span>
+                    <label for="input-rotate">Rotate</label>
+                    <input type="range" id="input-rotate" class="set-rotate" min="0" max="360" value="0" oninput="onChangeOpacity(this)" disabled>
+                </span> -->
+                <div class="stickers ctrlflex"></div>
             </div>
         </div>
     </div>

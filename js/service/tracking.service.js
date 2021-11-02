@@ -1,20 +1,11 @@
 const gTracking = {
-    offset: {
-        start: null,
-        end: null,
-    },
-    shift: {
-        x: 0,
-        y: 0,
-    },
+    offset: { start: null, end: null },
+    shift: { x: 0, y: 0 },
     radius: null,
     isActive: false,
     isPinch: false,
-    change: function () {
-        if (!this.offset.end) return {
-            x: 0,
-            y: 0,
-        }
+    change() {
+        if (!this.offset.end) return { x: 0, y: 0 }
         return {
             x: this.offset.end.x - (this.offset.start.x - this.shift.x),
             y: this.offset.end.y - (this.offset.start.y - this.shift.y),
@@ -57,10 +48,7 @@ const gTracking = {
         this.radius = null;
         this.offset.start = null;
         this.offset.end = null;
-        this.shift = {
-            x: 0,
-            y: 0,
-        }
+        this.shift = { x: 0, y: 0 }
         this.isPinch = (ev.touches) ? (ev.touches.length === 2) : false;
         if (ev.touches) this.radius = {
             x: ev.touches[0].radiusX,
