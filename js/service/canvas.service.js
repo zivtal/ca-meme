@@ -1,3 +1,5 @@
+// import { storageService } from './storage.service.js';
+
 'use strict';
 
 var gImgNextId;
@@ -12,7 +14,7 @@ function initCanvasModel() {
     gImgNextId = 0;
     gMeme = _createMeme();
     gImgs = _createImgs();
-    _loadMemeFromStorage();
+    gMemeStorage = _loadMemeFromStorage();
     gStickers = _createStickers();
 }
 
@@ -88,11 +90,8 @@ function _createMeme() {
 }
 
 function _loadMemeFromStorage() {
-    gMemeStorage = loadFromStorage('meme');
-    if (!gMemeStorage || gMemeStorage.length === 0) {
-        return;
-    }
-    gMemeStorage.forEach(canvas => {
+    const storage = loadFromStorage('meme') || [];
+    storage.forEach(canvas => {
         const img = new Image();
         img.onload = function () {
             canvas.image.data = img;
@@ -107,6 +106,7 @@ function _loadMemeFromStorage() {
             img.src = item.image.url;
         });
     });
+    return storage;
 }
 
 function _saveMemeToStorage() {

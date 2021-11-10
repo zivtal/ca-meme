@@ -4,6 +4,19 @@
     else { document.addEventListener('load', init, false); }
 
     function init() {
+        // add css file
+        // const id = 'navbar';
+        // if (!document.getElementById(id)) {
+        //     const head = document.getElementsByTagName('head')[0];
+        //     const link = document.createElement('link');
+        //     link.id = id;
+        //     link.rel = 'stylesheet';
+        //     link.type = 'text/css';
+        //     link.href = './css/navbar.css';
+        //     link.media = 'all';
+        //     head.appendChild(link);
+        // }
+
         const toggleMenu = function () {
             const elCheckBox = document.querySelector('.main-header nav input');
             elCheckBox.checked = !(elCheckBox.checked);

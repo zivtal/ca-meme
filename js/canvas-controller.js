@@ -262,18 +262,35 @@ function endTracking() {
 }
 
 function keyDown(ev) {
-    if (ev.key === 'Escape') clearActiveLayer();
-    if (!gActiveLayer || document.activeElement.nodeName === 'INPUT') return;
     ev.stopPropagation();
-    if (ev.key.substr(0, 5) === 'Arrow') onChangePosition(ev.key.substr(5, 5));
-    switch (gActiveLayer.type) {
-        case 'text':
-            if (ev.key === '+' || ev.key === '-') onFontSizeClick((ev.key === '+') ? 2 : -2);
-            break;
-        case 'image':
-            if (ev.key === '+' || ev.key === '-') resizeCanvasItem(gActiveLayer, (ev.key === '+') ? 1 : -1);
-            renderCanvas();
-            break;
+    if (ev.key === 'Escape') clearActiveLayer();
+    if (ev.altKey === false) {
+        if (gActiveLayer && gActiveLayer.type === 'text' && document.activeElement.nodeName !== 'INPUT') {
+            const elInput = document.querySelector('.canvas-control .textinput');
+            if (ev.keyCode >= 32 && ev.keyCode <= 126) {
+                gActiveLayer.text += ev.key;
+                elInput.value = gActiveLayer.text;
+                renderCanvas();
+            } else if (ev.key === 'Backspace') {
+                gActiveLayer.text = gActiveLayer.text.substr(0, gActiveLayer.text.length - 1);
+                elInput.value = gActiveLayer.text;
+                renderCanvas();
+            }
+        } else if (ev.key.substr(0, 5) === 'Arrow') {
+            onChangePosition(ev.key.substr(5, 5));
+        }
+    } else {
+        if (ev.key.toLowerCase() === 's') onSwitchClick();
+        if (!gActiveLayer) return;
+        switch (gActiveLayer.type) {
+            case 'text':
+                if (ev.key === '+' || ev.key === '-') onFontSizeClick((ev.key === '+') ? 2 : -2);
+                break;
+            case 'image':
+                if (ev.key === '+' || ev.key === '-') resizeCanvasItem(gActiveLayer, (ev.key === '+') ? 3 : -3);
+                renderCanvas();
+                break;
+        }
     }
 }
 
